@@ -4,6 +4,7 @@ import JiraClient from './JiraClient';
 import authRoutesFactory from './routes/auth';
 import apiRoutesFactory from './routes/api';
 
+//TODO: ConfigService + joi to validate it
 const JIRA_USER = process.env.JIRA_USER;
 const JIRA_TOKEN = process.env.JIRA_TOKEN;
 const JIRA_HOST = process.env.JIRA_HOST;
