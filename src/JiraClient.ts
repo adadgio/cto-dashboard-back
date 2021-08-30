@@ -8,7 +8,7 @@ export default class JiraClient {
     private jiraUser: string,
     private jiraToken: string,
   ) {
-    this.authToken = Buffer.from( this.jiraHost + ":" + this.jiraToken).toString("base64");
+    this.authToken = Buffer.from( this.jiraUser + ":" + this.jiraToken).toString("base64");
     this.authHeader = "Basic " + this.authToken;
   }
 
