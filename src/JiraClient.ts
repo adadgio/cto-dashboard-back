@@ -11,9 +11,13 @@ export default class JiraClient {
   private async jiraRequest(path: string) {
     return got('https://' + this.jiraHost + path, {
       headers: {
-        'Authentication': `TODO`
+        Authorization: `Basic ${
+          Buffer.from(
+            process.env.JIRA_USER+":"+process.env.JIRA_TOKEN
+          ).toString("base64")
+        }`
       }
-    })
+    }).json()
   }
 
   async getBoards() {
