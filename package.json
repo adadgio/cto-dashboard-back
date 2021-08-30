@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "run": "node dist/index.js",
+    "start": "node dist/index.js",
     "watch": "ts-node-dev --no-notify --respawn src/index.ts",
     "test": "jest",
     "test:watch": "jest --watch"
