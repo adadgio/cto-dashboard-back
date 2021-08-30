@@ -1,23 +1,27 @@
 import got from 'got';
 
 export default class JiraClient {
+  private authToken: string;
+  private authHeader: string;
   constructor (
     private jiraHost: string,
     private jiraUser: string,
     private jiraToken: string,
   ) {
+    this.authToken = Buffer.from( this.jiraHost + ":" + this.jiraToken).toString("base64");
+    this.authHeader = "Basic " + this.authToken;
   }
 
   private async jiraRequest(path: string) {
-    return got('https://' + this.jiraHost + path, {
+    const req = got('https://' + this.jiraHost + path, {
       headers: {
-        Authorization: `Basic ${
-          Buffer.from(
-            process.env.JIRA_USER+":"+process.env.JIRA_TOKEN
-          ).toString("base64")
-        }`
+        Authorization: this.authHeader
       }
-    }).json()
+    })
+
+    //TODO: define how we want to handle errors through the app!
+    const body = await req.json();
+    return body;
   }
 
   async getBoards() {
