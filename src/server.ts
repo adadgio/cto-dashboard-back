@@ -19,6 +19,6 @@ export const app = express();
 const authRouter = authRoutesFactory(authService);
 const apiRouter = apiRoutesFactory(jiraClient);
 
-app.use(authRouter);
-app.use(apiRouter);
+app.use("/auth", authRouter);
+app.use("/api", apiRouter);
 
