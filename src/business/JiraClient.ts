@@ -1,5 +1,5 @@
-import { json } from 'express';
-import got, { RequestError } from 'got';
+import got from 'got';
+import { JiraApiReturn, JiraSprint } from '../../types/Jira';
 
 export default class JiraClient {
   private authToken: string;
@@ -13,15 +13,14 @@ export default class JiraClient {
     this.authHeader = "Basic " + this.authToken;
   }
 
-  private async jiraRequest(path: string) {
+  private async jiraRequest<T>(path: string): Promise<JiraApiReturn<T>> {
     const req = got('https://' + this.jiraHost + path, {
       headers: {
         Authorization: this.authHeader
       }
     })
 
-    //TODO: define how we want to handle errors through the app!
-    const body = await req.json();
+    const body: JiraApiReturn<T> = await req.json();
     return body;
   }
 
@@ -35,15 +34,13 @@ export default class JiraClient {
     return result;
   }
 
-  async getSprints(boardIds: Array<String>):Promise<Array<String>> {
-    const sprintPromises = boardIds.map((boardId)=>this.jiraRequest(`/rest/agile/1.0/board/${boardId}/sprint`));
-    try{
-      const sprints: any[] = await Promise.all(sprintPromises);
-      return sprints;
-    }catch(e:any){
-      console.log("getSprints error", e.response.statusCode);
-      return JSON.parse(e.response.statusCode);
-    }
+  async getSprints(boardIds: number[]): Promise<JiraSprint[]> {
+    const sprintPromises = boardIds.map( boardId => this.jiraRequest<JiraSprint>(`/rest/agile/1.0/board/${boardId}/sprint`) );
+
+    //TODO: handle pagination
+    const results = await Promise.all(sprintPromises);
+    const jiraSprints = results.flatMap(result => result.values)
+    return jiraSprints;
   }
 
   async getIssues(boardId: string) {

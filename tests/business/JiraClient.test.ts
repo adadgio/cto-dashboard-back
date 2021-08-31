@@ -1,6 +1,6 @@
-import conf from '../src/Configuration';
+import conf from '../../src/ConfigurationSingleton';
 
-import JiraClient from "../src/JiraClient";
+import JiraClient from "../../src/business/JiraClient";
 
 describe("JiraClient", () => {
   it('should fail cleanly when auth is invalid', async () => {
@@ -20,6 +20,22 @@ describe("JiraClient", () => {
 
     const boards = await jc.getBoards();
     expect(boards).toContain(boardSchema);
+  });
+
+  it('should get sprints', async () => {
+    const jc = new JiraClient(conf.jiraHost, conf.jiraUser, conf.jiraToken);
+
+
+    const sprintSchema = {
+      id: expect.any(Number),
+      name: expect.any(String),
+      boardId: expect.any(Number),
+    };
+
+    const sprints = await jc.getSprints([1]);
+    expect(sprints).toEqual(
+      expect.arrayContaining([sprintSchema])
+    )
   });
 })
 

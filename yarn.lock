@@ -306,6 +306,10 @@
   "resolved" "git+ssh://git@github.com/adadgio/cto-dashboard-model.git#371a8128332ef86bf055b77c166ac50e8adf441e"
   "version" "1.1.1"
 
+"@cto-dashboard-model/cto-dashboard-model@https://github.com/adadgio/cto-dashboard-model":
+  version "1.1.1"
+  resolved "https://github.com/adadgio/cto-dashboard-model#371a8128332ef86bf055b77c166ac50e8adf441e"
+
 "@hapi/hoek@^9.0.0":
   "integrity" "sha512-sqKVVVOe5ivCaXDWivIJYVSaEgdQK9ul7a4Kity5Iw7u9+wBAPbX1RMSnLLmp7O4Vzj0WOWwMAJsTL00xwaNug=="
   "resolved" "https://registry.npmjs.org/@hapi/hoek/-/hoek-9.2.0.tgz"

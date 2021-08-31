@@ -5,7 +5,8 @@ dotenv.config();
 
 
 export const configurationSchema = Joi.object({
-  port: Joi.number().default(3000),
+  NODE_ENV: Joi.string().valid("development", "production", "test").required(),
+  port: Joi.number(),
   jiraUser: Joi.string().required(),
   jiraToken: Joi.string().required(),
   jiraHost: Joi.string().required(),
@@ -13,6 +14,7 @@ export const configurationSchema = Joi.object({
 
 //TODO: find a way to avoid repetitive type (validating at compile time) + schema (validating at execution time)
 type Configuration = {
+  NODE_ENV: string,
   port: number,
   jiraUser: string,
   jiraToken: string,
@@ -20,7 +22,8 @@ type Configuration = {
 }
 
 const validationResult = configurationSchema.validate({
-  port: process.env.PORT,
+  NODE_ENV: process.env.NODE_ENV,
+  port: process.env.PORT || 3000,
   jiraUser: process.env.JIRA_USER,
   jiraToken: process.env.JIRA_TOKEN,
   jiraHost: process.env.JIRA_HOST,
@@ -35,4 +38,8 @@ if (validationResult.warning) {
 }
 
 const configurationSingleton: Configuration = validationResult.value;
+
+console.info("app is running on env", configurationSingleton.NODE_ENV);
+
+
 export default configurationSingleton;
