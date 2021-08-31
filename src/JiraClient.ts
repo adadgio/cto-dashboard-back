@@ -21,7 +21,6 @@ export default class JiraClient {
       }
     })
 
-    //TODO: define how we want to handle errors through the app!
     const body: JiraApiReturn<T> = await req.json();
     return body;
   }
