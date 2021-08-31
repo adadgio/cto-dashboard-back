@@ -21,3 +21,20 @@ export type JiraSprint = {
   self: string,
   state: "active" | "future" | "archived" //todo
 }
+
+export type JiraBoard = {
+  id: number,
+  location: {
+      avatarURI: string,
+      displayName: string,
+      name: string,
+      projectId: number,
+      projectKey: string,
+      projectName: string,
+      projectTypeKey: string
+  },
+  name: string,
+  self: string
+  type: "simple" | "kanban" //TODO check other types
+}
+

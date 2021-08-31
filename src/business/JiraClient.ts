@@ -1,5 +1,5 @@
 import got from 'got';
-import { JiraApiReturnIssues, JiraApiReturnValues, JiraSprint } from '../../types/Jira';
+import { JiraApiReturnIssues, JiraApiReturnValues, JiraSprint, JiraBoard } from '../../types/Jira';
 
 export default class JiraClient {
   private authToken: string;
@@ -25,8 +25,10 @@ export default class JiraClient {
   }
 
   async getBoards() {
-    const result = await this.jiraRequest<JiraApiReturnValues<any>>('/rest/agile/1.0/board');
-    return result;
+    const result = await this.jiraRequest<JiraApiReturnValues<JiraBoard>>('/rest/agile/1.0/board');
+    const boards = result.values;
+
+    return boards;
   }
 
   async getBoard(boardId: string) {
