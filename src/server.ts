@@ -6,17 +6,20 @@ import authRoutesFactory from './routes/auth';
 import apiRoutesFactory from './routes/api';
 import errorHandlerMiddleware from './middlewares/errorHandler';
 import loggerMiddleware from './middlewares/loggerMiddleware';
+var bodyParser = require('body-parser')
 
 const jiraClient = new JiraClient(conf.jiraHost, conf.jiraUser, conf.jiraToken);
-const authService = { TODO: true };
 
 export const app = express();
-const authRouter = authRoutesFactory(authService);
+
+// Bodyparser - traite les requêtes.
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json({limit: '50mb'}));
+
+const authRouter = authRoutesFactory();
 const apiRouter = apiRoutesFactory(jiraClient);
 
-
 app.use(loggerMiddleware);
-
 app.use(authRouter);
 app.use(apiRouter);
 
