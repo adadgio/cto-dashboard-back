@@ -1,5 +1,5 @@
 import got from 'got';
-import { JiraApiReturn, JiraSprint } from '../types/Jira';
+import { JiraApiReturn, JiraSprint } from '../../types/Jira';
 
 export default class JiraClient {
   private authToken: string;
