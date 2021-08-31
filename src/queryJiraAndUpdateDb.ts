@@ -16,7 +16,7 @@ const main = async () => {
   const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
   const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
 
-  const issues = translators.jiraIssuesToIssues(jiraIssues);
+  const issues = translators.jiraIssues(jiraIssues);
 
   console.log("all issues over", jiraBoards.length, "boards:");
   console.log(issues);
