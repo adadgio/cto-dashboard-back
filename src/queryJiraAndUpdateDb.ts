@@ -5,11 +5,13 @@ import * as translators from './business/JiraDataTranslators';
 const main = async () => {
   const jiraClient = new JiraClient(conf.jiraHost, conf.jiraUser, conf.jiraToken);
 
+  console.log("querying boards");
   const jiraBoards = await jiraClient.getBoards();
   //TODO: process/translate boards data?
   //
   const boardIds = jiraBoards.map(board => board.id);
 
+  console.log("querying issues");
   const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssues(id));
   const jiraIssuesQueries = await Promise.all(jiraBoards);
   const jiraIssues = jiraIssuesQueries.flat();
