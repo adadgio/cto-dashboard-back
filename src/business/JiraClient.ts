@@ -1,5 +1,5 @@
 import got from 'got';
-import { JiraApiReturn, JiraSprint } from '../../types/Jira';
+import { JiraApiReturn, JiraIssues, JiraSprint } from '../../types/Jira';
 
 export default class JiraClient {
   private authToken: string;
@@ -43,8 +43,12 @@ export default class JiraClient {
     return jiraSprints;
   }
 
-  async getIssues(boardId: string) {
-    const result = await this.jiraRequest(`/rest/agile/1.0/board/${boardId}/issue`);
-    return result;
+  async getIssues(projectIds: number[]): Promise<JiraIssues[]> {
+    const issuesPromises = projectIds.map(pId => this.jiraRequest<JiraIssues>(`/rest/agile/1.0/board/${pId}/issue`));
+    const results = await Promise.all(issuesPromises);
+
+    const jiraIssues = results.flatMap(result => result.issues);
+
+    return jiraIssues;
   }
 }
