@@ -41,11 +41,13 @@ const routeFactory = (jiraClient: JiraClient) => {
   });
 
   router.get('/issueList', async (req:Request, res:Response, next: NextFunction)=>{
-    try {
-      const projectIds = (req.query.ProjectIds as String).split(",").map(Number);
+    if (!req.query.boardIds)
+      return res.status(500).json(new ApiError("No board id provided"));
 
-      //TODO: make a helper to await and flatten multiple queries, this code happens in the script too
-      const jiraIssuesQueriesPromises = projectIds.map(id => jiraClient.getIssuesOfBoard(id));
+    const boardIds = (req.query.boardIds as string).split(",").map(Number);
+
+    try {
+      const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
       const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
       const issues = translators.jiraIssues(jiraIssues);
 
