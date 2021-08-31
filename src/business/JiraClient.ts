@@ -45,9 +45,12 @@ export default class JiraClient {
     return jiraSprints;
   }
 
-  async getIssues(boardId: string) {
+  async getIssues(boardId: number) {
     console.log("getIssues", boardId);
+    //
+    //TODO: handle pagination
+    //TODO: typings
     const result = await this.jiraRequest<JiraApiReturnIssues<any>>(`/rest/agile/1.0/board/${boardId}/issue`);
-    return result;
+    return result.issues;
   }
 }

@@ -12,3 +12,8 @@ export const jiraSprintsToSprints = (jiraSprints: JiraSprint[]) => {
 
   return sprints;
 }
+
+export const jiraIssues = (jiraIssues: any[]) => {
+  //TODO
+  return jiraIssues;
+}
