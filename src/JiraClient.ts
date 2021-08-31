@@ -1,4 +1,5 @@
-import got from 'got';
+import { json } from 'express';
+import got, { RequestError } from 'got';
 
 export default class JiraClient {
   constructor (
@@ -21,26 +22,28 @@ export default class JiraClient {
   }
 
   async getBoards() {
-    await this.jiraRequest('/rest/agile/1.0/board');
-    //todo mouline data
-    //todo type for API response
+    const result = await this.jiraRequest('/rest/agile/1.0/board');
+    return result;
   }
 
   async getBoard(boardId: string) {
-    await this.jiraRequest(`/rest/agile/1.0/board${boardId}`);
-    //todo mouline data
-    //todo type for API response
+    const result = await this.jiraRequest(`/rest/agile/1.0/board${boardId}`);
+    return result;
   }
 
-  async getSprints(boardId: string) {
-    await this.jiraRequest(`/rest/agile/1.0/board/${boardId}/sprint`);
-    //todo mouline data
-    //todo type for API response
+  async getSprints(boardIds: Array<String>):Promise<Array<String>> {
+    const sprintPromises = boardIds.map((boardId)=>this.jiraRequest(`/rest/agile/1.0/board/${boardId}/sprint`));
+    try{
+      const sprints: any[] = await Promise.all(sprintPromises);
+      return sprints;
+    }catch(e:any){
+      console.log("getSprints error", e.response.statusCode);
+      return JSON.parse(e.response.statusCode);
+    }
   }
 
   async getIssues(boardId: string) {
-    await this.jiraRequest(`/rest/agile/1.0/board/${boardId}/issue`);
-    //todo mouline data
-    //todo type for API response
+    const result = await this.jiraRequest(`/rest/agile/1.0/board/${boardId}/issue`);
+    return result;
   }
 }
