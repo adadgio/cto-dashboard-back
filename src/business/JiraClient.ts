@@ -36,22 +36,21 @@ export default class JiraClient {
     return result;
   }
 
-  async getSprints(boardIds: number[]): Promise<JiraSprint[]> {
-    const sprintPromises = boardIds.map( boardId => this.jiraRequest<JiraApiReturnValues<JiraSprint>>(`/rest/agile/1.0/board/${boardId}/sprint`) );
-
+  async getSprintsOfBoard(boardId: number): Promise<JiraSprint[]> {
     //TODO: handle pagination
-    const results = await Promise.all(sprintPromises);
-    const jiraSprints = results.flatMap(result => result.values)
+
+    const result = await this.jiraRequest<JiraApiReturnValues<JiraSprint>>(`/rest/agile/1.0/board/${boardId}/sprint`);
+    const jiraSprints = result.values;
+
     return jiraSprints;
   }
 
   async getIssuesOfBoard(boardId: number) {
-    console.log("getIssues", boardId);
-
     //TODO: handle pagination
-    const result = await this.jiraRequest<JiraApiReturnIssues<JiraIssue>>(`/rest/agile/1.0/board/${boardId}/issue`);
-    const jiraIssue = result.issues;
 
-    return jiraIssue;
+    const result = await this.jiraRequest<JiraApiReturnIssues<JiraIssue>>(`/rest/agile/1.0/board/${boardId}/issue`);
+    const jiraIssues = result.issues;
+
+    return jiraIssues;
   }
 }

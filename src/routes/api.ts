@@ -2,6 +2,7 @@ import { Router, RequestHandler, Request, Response, NextFunction } from 'expres
 import JiraClient from '../business/JiraClient';
 import { jiraIssuesToIssues, jiraSprintsToSprints } from '../business/JiraDataTranslators'
 import ApiError from '../ApiError';
+import {waitAndFlatten} from '../utils';
 
 
 const routeFactory = (jiraClient: JiraClient) => {
@@ -29,7 +30,8 @@ const routeFactory = (jiraClient: JiraClient) => {
     const boardIds = (req.query.boardIds as string).split(",").map(Number);
 
     try {
-      const jiraSprints = await jiraClient.getSprints(boardIds);
+      const jiraSprintsPromises = boardIds.map(id => jiraClient.getSprintsOfBoard(id));
+      const jiraSprints = await waitAndFlatten(jiraSprintsPromises);
       const sprints = jiraSprintsToSprints(jiraSprints);
 
       return res.json(sprints);
@@ -44,9 +46,8 @@ const routeFactory = (jiraClient: JiraClient) => {
 
       //TODO: make a helper to await and flatten multiple queries, this code happens in the script too
       const jiraIssuesQueriesPromises = projectIds.map(id => jiraClient.getIssuesOfBoard(id));
-      const jiraIssuesQueries = await Promise.all(jiraIssuesQueriesPromises);
-      const jiraIssues = jiraIssuesQueries.flat();
-      const issues = await jiraIssuesToIssues(jiraIssues);
+      const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
+      const issues = jiraIssuesToIssues(jiraIssues);
 
       return res.json(issues);
     } catch(e: any) {

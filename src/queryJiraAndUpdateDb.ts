@@ -1,6 +1,7 @@
 import conf from './ConfigurationSingleton';
 import JiraClient from './business/JiraClient';
 import * as translators from './business/JiraDataTranslators';
+import { waitAndFlatten } from './utils';
 
 const main = async () => {
   const jiraClient = new JiraClient(conf.jiraHost, conf.jiraUser, conf.jiraToken);
@@ -13,8 +14,7 @@ const main = async () => {
 
   console.log("querying issues");
   const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
-  const jiraIssuesQueries = await Promise.all(jiraIssuesQueriesPromises);
-  const jiraIssues = jiraIssuesQueries.flat();
+  const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
 
   const issues = translators.jiraIssuesToIssues(jiraIssues);
 
