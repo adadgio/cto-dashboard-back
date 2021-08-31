@@ -1,8 +1,15 @@
-export type JiraApiReturn<T> = {
+export interface JiraApiReturn {
   isLast: boolean,
   maxResults: number,
   startAt: number,
+}
+
+export interface JiraApiReturnValues<T> extends JiraApiReturn {
   values: T[]
+}
+
+export interface JiraApiReturnIssues<T> extends JiraApiReturn {
+  issues: T[]
 }
 
 export type JiraSprint = {
