@@ -1,6 +1,6 @@
 import { Router, RequestHandler, Request, Response } from 'express';
 import JiraClient from '../JiraClient';
-import { jiraSprintsToSprints } from '../Services/JiraDataTranslators'
+import { jiraSprintsToSprints } from '../services/JiraDataTranslators'
 
 
 const routeFactory = (jiraClient: JiraClient) => {
