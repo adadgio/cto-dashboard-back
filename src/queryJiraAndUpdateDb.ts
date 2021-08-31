@@ -12,11 +12,11 @@ const main = async () => {
   const boardIds = jiraBoards.map(board => board.id);
 
   console.log("querying issues");
-  const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssues(id));
+  const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
   const jiraIssuesQueries = await Promise.all(jiraIssuesQueriesPromises);
   const jiraIssues = jiraIssuesQueries.flat();
 
-  const issues = translators.jiraIssues(jiraIssues);
+  const issues = translators.jiraIssuesToIssues(jiraIssues);
 
   console.log("all issues over", jiraBoards.length, "boards:");
   console.log(issues);

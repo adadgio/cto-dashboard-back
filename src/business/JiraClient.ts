@@ -1,5 +1,5 @@
 import got from 'got';
-import { JiraApiReturnIssues, JiraApiReturnValues, JiraSprint, JiraBoard } from '../../types/Jira';
+import { JiraApiReturnIssues, JiraApiReturnValues, JiraSprint, JiraIssue, JiraBoard } from '../../types/Jira';
 
 export default class JiraClient {
   private authToken: string;
@@ -45,12 +45,13 @@ export default class JiraClient {
     return jiraSprints;
   }
 
-  async getIssues(boardId: number) {
+  async getIssuesOfBoard(boardId: number) {
     console.log("getIssues", boardId);
-    //
+
     //TODO: handle pagination
-    //TODO: typings
-    const result = await this.jiraRequest<JiraApiReturnIssues<any>>(`/rest/agile/1.0/board/${boardId}/issue`);
-    return result.issues;
+    const result = await this.jiraRequest<JiraApiReturnIssues<JiraIssue>>(`/rest/agile/1.0/board/${boardId}/issue`);
+    const jiraIssue = result.issues;
+
+    return jiraIssue;
   }
 }

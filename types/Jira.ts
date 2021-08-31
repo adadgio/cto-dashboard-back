@@ -38,3 +38,14 @@ export type JiraBoard = {
   type: "simple" | "kanban" //TODO check other types
 }
 
+export type JiraIssue = {
+  id: number,
+  fields:{
+    sprint:JiraSprint | null,
+    summary:string
+    status: {
+      name:"Todo" | "Done"
+    },
+    type: "Bug" | "Feature",
+  },
+}
