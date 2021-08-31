@@ -40,7 +40,7 @@ const routeFactory = (jiraClient: JiraClient) => {
 
   router.get('/issueList', async (req:Request, res:Response, next: NextFunction)=>{
     try {
-      return res.json(await jiraClient.getIssues(req.params.boardId));
+      return res.json(await jiraClient.getIssues(Number(req.query.boardId as string)));
     } catch(e: any) {
       next(new ApiError(e));
     }
