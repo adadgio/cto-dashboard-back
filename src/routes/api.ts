@@ -1,6 +1,6 @@
 import { Router, RequestHandler, Request, Response, NextFunction } from 'express';
 import JiraClient from '../JiraClient';
-import { jiraSprintsToSprints } from '../services/JiraDataTranslators'
+import { jiraSprintsToSprints } from '../business/JiraDataTranslators'
 import ApiError from '../ApiError';
 
 
