@@ -1,42 +1,53 @@
-import got from 'got';
+import { json } from 'express';
+import got, { RequestError } from 'got';
 
 export default class JiraClient {
+  private authToken: string;
+  private authHeader: string;
   constructor (
     private jiraHost: string,
     private jiraUser: string,
     private jiraToken: string,
   ) {
+    this.authToken = Buffer.from( this.jiraUser + ":" + this.jiraToken).toString("base64");
+    this.authHeader = "Basic " + this.authToken;
   }
 
   private async jiraRequest(path: string) {
-    return got('https://' + this.jiraHost + path, {
+    const req = got('https://' + this.jiraHost + path, {
       headers: {
-        'Authentication': `TODO`
+        Authorization: this.authHeader
       }
     })
+
+    //TODO: define how we want to handle errors through the app!
+    const body = await req.json();
+    return body;
   }
 
   async getBoards() {
-    await this.jiraRequest('/rest/agile/1.0/board');
-    //todo mouline data
-    //todo type for API response
+    const result = await this.jiraRequest('/rest/agile/1.0/board');
+    return result;
   }
 
   async getBoard(boardId: string) {
-    await this.jiraRequest(`/rest/agile/1.0/board${boardId}`);
-    //todo mouline data
-    //todo type for API response
+    const result = await this.jiraRequest(`/rest/agile/1.0/board${boardId}`);
+    return result;
   }
 
-  async getSprints(boardId: string) {
-    await this.jiraRequest(`/rest/agile/1.0/board/${boardId}/sprint`);
-    //todo mouline data
-    //todo type for API response
+  async getSprints(boardIds: Array<String>):Promise<Array<String>> {
+    const sprintPromises = boardIds.map((boardId)=>this.jiraRequest(`/rest/agile/1.0/board/${boardId}/sprint`));
+    try{
+      const sprints: any[] = await Promise.all(sprintPromises);
+      return sprints;
+    }catch(e:any){
+      console.log("getSprints error", e.response.statusCode);
+      return JSON.parse(e.response.statusCode);
+    }
   }
 
   async getIssues(boardId: string) {
-    await this.jiraRequest(`/rest/agile/1.0/board/${boardId}/issue`);
-    //todo mouline data
-    //todo type for API response
+    const result = await this.jiraRequest(`/rest/agile/1.0/board/${boardId}/issue`);
+    return result;
   }
 }
