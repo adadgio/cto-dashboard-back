@@ -1,6 +1,6 @@
 import { Router, RequestHandler, Request, Response } from 'express';
 import JiraClient from '../JiraClient';
-//import { ProjectDTO } from "cto-dashboard-model";
+import { Sprint } from "@cto-dashboard-model/cto-dashboard-model";
 
 
 const routeFactory = (jiraClient: JiraClient) => {
@@ -29,7 +29,7 @@ const routeFactory = (jiraClient: JiraClient) => {
       const sprintsFromJira = await jiraClient.getSprints(boardIds);
 
 
-      const sprints = sprintsFromJira.map(sprint => {
+      const sprints: Sprint[] = sprintsFromJira.map(sprint => {
         return {
           id: sprint.id,
           name: sprint.name,
