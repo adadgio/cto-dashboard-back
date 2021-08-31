@@ -1,6 +1,6 @@
-import conf from '../src/ConfigurationSingleton';
+import conf from '../../src/ConfigurationSingleton';
 
-import JiraClient from "../src/JiraClient";
+import JiraClient from "../../src/business/JiraClient";
 
 describe("JiraClient", () => {
   it('should fail cleanly when auth is invalid', async () => {
