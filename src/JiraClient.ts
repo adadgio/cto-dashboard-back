@@ -1,6 +1,23 @@
 import { json } from 'express';
 import got, { RequestError } from 'got';
 
+type JiraApiReturn<T> = {
+  isLast: boolean,
+  maxResults: number,
+  startAt: number,
+  values: T[]
+}
+
+type JiraSprint = {
+  endDate?: string,
+  startDate?: string,
+  id: number,
+  name: string,
+  originBoardId: number,
+  self: string,
+  state: "active" | "future" | "archived" //todo
+}
+
 export default class JiraClient {
   private authToken: string;
   private authHeader: string;
@@ -13,7 +30,7 @@ export default class JiraClient {
     this.authHeader = "Basic " + this.authToken;
   }
 
-  private async jiraRequest(path: string) {
+  private async jiraRequest<T>(path: string): Promise<JiraApiReturn<T>> {
     const req = got('https://' + this.jiraHost + path, {
       headers: {
         Authorization: this.authHeader
@@ -21,7 +38,7 @@ export default class JiraClient {
     })
 
     //TODO: define how we want to handle errors through the app!
-    const body = await req.json();
+    const body: JiraApiReturn<T> = await req.json();
     return body;
   }
 
@@ -35,12 +52,15 @@ export default class JiraClient {
     return result;
   }
 
-  async getSprints(boardIds: Array<String>):Promise<Array<String>> {
-    const sprintPromises = boardIds.map((boardId)=>this.jiraRequest(`/rest/agile/1.0/board/${boardId}/sprint`));
-    try{
-      const sprints: any[] = await Promise.all(sprintPromises);
-      return sprints;
-    }catch(e:any){
+  async getSprints(boardIds: String[]): Promise<JiraSprint[]> {
+    const sprintPromises = boardIds.map( boardId => this.jiraRequest<JiraSprint>(`/rest/agile/1.0/board/${boardId}/sprint`) );
+
+    try {
+      //TODO: handle pagination
+      const results = await Promise.all(sprintPromises);
+      const jiraSprints = results.flatMap(result => result.values)
+      return jiraSprints;
+    } catch(e: any) {
       console.log("getSprints error", e.response.statusCode);
       return JSON.parse(e.response.statusCode);
     }

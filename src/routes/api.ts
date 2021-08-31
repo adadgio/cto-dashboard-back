@@ -1,5 +1,7 @@
 import { Router, RequestHandler, Request, Response } from 'express';
 import JiraClient from '../JiraClient';
+//import { ProjectDTO } from "cto-dashboard-model";
+
 
 const routeFactory = (jiraClient: JiraClient) => {
   const router = Router();
@@ -9,16 +11,38 @@ const routeFactory = (jiraClient: JiraClient) => {
    */
   router.get('/projectList', async (req:Request, res:Response)=>{
     //TODO: return appropriate response to board not found.
-    const result = await jiraClient.getBoards();
-    return res.json(result);
+    const boards = await jiraClient.getBoards();
+
+    return res.json(boards);
   });
 
   /**
    * @returns all sprints according to boardList.
    */
   router.get('/sprintList', async (req:Request, res:Response)=>{
-    const boardIds:Array<string> = (req.query.boardList as string).split(",");
-    return res.json(await jiraClient.getSprints(boardIds));
+    if (!req.query.boardIds)
+      return res.status(500).json({error: "No board id provided"});
+
+    const boardIds = (req.query.boardIds as string).split(",");
+
+    try {
+      const sprintsFromJira = await jiraClient.getSprints(boardIds);
+
+
+      const sprints = sprintsFromJira.map(sprint => {
+        return {
+          id: sprint.id,
+          name: sprint.name,
+          boardId: sprint.originBoardId,
+        }
+      })
+
+      return res.json(sprints);
+    } catch(e) {
+      console.error(e);
+      //TODO: error handling;
+      res.send(500);
+    }
   });
 
   router.get('/issueList', async (req:Request, res:Response)=>{
