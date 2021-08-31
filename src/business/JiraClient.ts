@@ -30,7 +30,7 @@ export default class JiraClient {
   }
 
   async getBoard(boardId: string) {
-    const result = await this.jiraRequest<JiraApiReturnValues<any>>(`/rest/agile/1.0/board${boardId}`);
+    const result = await this.jiraRequest<JiraApiReturnValues<any>>(`/rest/agile/1.0/board/${boardId}`);
     return result;
   }
 
