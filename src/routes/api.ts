@@ -11,10 +11,12 @@ const routeFactory = (jiraClient: JiraClient) => {
    * @returns all boards
    */
   router.get('/projectList', async (req:Request, res:Response)=>{
-    //TODO: return appropriate response to board not found.
-    const boards = await jiraClient.getBoards();
-
-    return res.json(boards);
+    try {
+      const boards = await jiraClient.getBoards();
+      return res.json(boards);
+    } catch(e: any) {
+      res.status(500).json(new ApiError(e));
+    }
   });
 
   /**
@@ -32,13 +34,16 @@ const routeFactory = (jiraClient: JiraClient) => {
 
       return res.json(sprints);
     } catch(e: any) {
-      console.error("sprintList error", e);
       res.status(500).json(new ApiError(e));
     }
   });
 
   router.get('/issueList', async (req:Request, res:Response)=>{
-    return res.json(await jiraClient.getIssues(req.params.boardId));
+    try {
+      return res.json(await jiraClient.getIssues(req.params.boardId));
+    } catch(e: any) {
+      res.status(500).json(new ApiError(e));
+    }
   });
 
   return router;
