@@ -39,15 +39,10 @@ export default class JiraClient {
   async getSprints(boardIds: String[]): Promise<JiraSprint[]> {
     const sprintPromises = boardIds.map( boardId => this.jiraRequest<JiraSprint>(`/rest/agile/1.0/board/${boardId}/sprint`) );
 
-    try {
-      //TODO: handle pagination
-      const results = await Promise.all(sprintPromises);
-      const jiraSprints = results.flatMap(result => result.values)
-      return jiraSprints;
-    } catch(e: any) {
-      console.log("getSprints error", e.response.statusCode);
-      return JSON.parse(e.response.statusCode);
-    }
+    //TODO: handle pagination
+    const results = await Promise.all(sprintPromises);
+    const jiraSprints = results.flatMap(result => result.values)
+    return jiraSprints;
   }
 
   async getIssues(boardId: string) {

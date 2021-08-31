@@ -1,6 +1,7 @@
 import { Router, RequestHandler, Request, Response } from 'express';
 import JiraClient from '../JiraClient';
 import { jiraSprintsToSprints } from '../services/JiraDataTranslators'
+import ApiError from '../ApiError';
 
 
 const routeFactory = (jiraClient: JiraClient) => {
@@ -21,7 +22,7 @@ const routeFactory = (jiraClient: JiraClient) => {
    */
   router.get('/sprintList', async (req:Request, res:Response)=>{
     if (!req.query.boardIds)
-      return res.status(500).json({error: "No board id provided"});
+      return res.status(500).json(new ApiError("No board id provided"));
 
     const boardIds = (req.query.boardIds as string).split(",");
 
@@ -30,10 +31,9 @@ const routeFactory = (jiraClient: JiraClient) => {
       const sprints = jiraSprintsToSprints(jiraSprints);
 
       return res.json(sprints);
-    } catch(e) {
-      console.error(e);
-      //TODO: error handling;
-      res.send(500);
+    } catch(e: any) {
+      console.error("sprintList error", e);
+      res.status(500).json(new ApiError(e));
     }
   });
 
