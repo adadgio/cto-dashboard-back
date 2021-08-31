@@ -26,7 +26,7 @@ const routeFactory = (jiraClient: JiraClient) => {
     if (!req.query.boardIds)
       return res.status(500).json(new ApiError("No board id provided"));
 
-    const boardIds = (req.query.boardIds as string).split(",");
+    const boardIds = (req.query.boardIds as string).split(",").map(Number);
 
     try {
       const jiraSprints = await jiraClient.getSprints(boardIds);

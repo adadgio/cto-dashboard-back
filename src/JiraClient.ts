@@ -34,7 +34,7 @@ export default class JiraClient {
     return result;
   }
 
-  async getSprints(boardIds: String[]): Promise<JiraSprint[]> {
+  async getSprints(boardIds: number[]): Promise<JiraSprint[]> {
     const sprintPromises = boardIds.map( boardId => this.jiraRequest<JiraSprint>(`/rest/agile/1.0/board/${boardId}/sprint`) );
 
     //TODO: handle pagination

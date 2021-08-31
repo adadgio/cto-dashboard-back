@@ -21,5 +21,21 @@ describe("JiraClient", () => {
     const boards = await jc.getBoards();
     expect(boards).toContain(boardSchema);
   });
+
+  it('should get sprints', async () => {
+    const jc = new JiraClient(conf.jiraHost, conf.jiraUser, conf.jiraToken);
+
+
+    const sprintSchema = {
+      id: expect.any(Number),
+      name: expect.any(String),
+      boardId: expect.any(Number),
+    };
+
+    const sprints = await jc.getSprints([1]);
+    expect(sprints).toEqual(
+      expect.arrayContaining([sprintSchema])
+    )
+  });
 })
 
