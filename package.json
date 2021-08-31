@@ -6,8 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/src/index.js",
-    "updateDb": "node dist/src/queryJiraAndUpdateDb.js",
     "watch": "ts-node-dev --no-notify --respawn src/index.ts",
+    "start:updatedb": "node dist/src/queryJiraAndUpdateDb.js",
+    "watch:updatedb": "ts-node-dev --no-notify --respawn src/queryJiraAndUpdateDb.ts",
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch"
   },
