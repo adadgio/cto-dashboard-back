@@ -1,5 +1,4 @@
-import { json } from 'express';
-import got, { RequestError } from 'got';
+import got from 'got';
 import { JiraApiReturn, JiraSprint } from '../types/Jira';
 
 export default class JiraClient {
