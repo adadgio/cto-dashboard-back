@@ -1,4 +1,4 @@
-import conf from './Configuration';
+import conf from './ConfigurationSingleton';
 import { app } from './server';
 
 console.log("started at", new Date());

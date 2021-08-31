@@ -1,6 +1,6 @@
 import express from 'express';
 
-import conf from './Configuration';
+import conf from './ConfigurationSingleton';
 import JiraClient from './JiraClient';
 import authRoutesFactory from './routes/auth';
 import apiRoutesFactory from './routes/api';

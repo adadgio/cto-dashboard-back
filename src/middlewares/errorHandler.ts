@@ -1,5 +1,5 @@
 import { ErrorRequestHandler } from 'express';
-import conf from '../Configuration';
+import conf from '../ConfigurationSingleton';
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.error(err)

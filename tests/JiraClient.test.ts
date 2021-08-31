@@ -1,4 +1,4 @@
-import conf from '../src/Configuration';
+import conf from '../src/ConfigurationSingleton';
 
 import JiraClient from "../src/JiraClient";
 
