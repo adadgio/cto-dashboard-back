@@ -13,7 +13,7 @@ const main = async () => {
 
   console.log("querying issues");
   const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssues(id));
-  const jiraIssuesQueries = await Promise.all(jiraBoards);
+  const jiraIssuesQueries = await Promise.all(jiraIssuesQueriesPromises);
   const jiraIssues = jiraIssuesQueries.flat();
 
   const issues = translators.jiraIssues(jiraIssues);
