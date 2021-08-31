@@ -1,5 +1,6 @@
 import { Router, RequestHandler, Request, Response } from 'express';
 import JiraClient from '../JiraClient';
+import SprintTranslator from '../translators/SprintTranslator';
 
 const routeFactory = (jiraClient: JiraClient) => {
   const router = Router();
@@ -18,7 +19,11 @@ const routeFactory = (jiraClient: JiraClient) => {
    */
   router.get('/sprintList', async (req:Request, res:Response)=>{
     const boardIds:Array<string> = (req.query.boardList as string).split(",");
-    return res.json(await jiraClient.getSprints(boardIds));
+
+    const {values} = await jiraClient.getSprints(boardIds);
+
+    new SprintTranslator().translateMulti(values as JiraSprint[]);
+    return res.json();
   });
 
   router.get('/issueList', async (req:Request, res:Response)=>{
