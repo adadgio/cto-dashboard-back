@@ -1,22 +1,6 @@
 import { json } from 'express';
 import got, { RequestError } from 'got';
-
-type JiraApiReturn<T> = {
-  isLast: boolean,
-  maxResults: number,
-  startAt: number,
-  values: T[]
-}
-
-type JiraSprint = {
-  endDate?: string,
-  startDate?: string,
-  id: number,
-  name: string,
-  originBoardId: number,
-  self: string,
-  state: "active" | "future" | "archived" //todo
-}
+import { JiraApiReturn, JiraSprint } from '../types/Jira';
 
 export default class JiraClient {
   private authToken: string;

@@ -1,6 +1,6 @@
 import { Router, RequestHandler, Request, Response } from 'express';
 import JiraClient from '../JiraClient';
-import { Sprint } from "@cto-dashboard-model/cto-dashboard-model";
+import { jiraSprintsToSprints } from '../Services/JiraDataTranslators'
 
 
 const routeFactory = (jiraClient: JiraClient) => {
@@ -26,16 +26,8 @@ const routeFactory = (jiraClient: JiraClient) => {
     const boardIds = (req.query.boardIds as string).split(",");
 
     try {
-      const sprintsFromJira = await jiraClient.getSprints(boardIds);
-
-
-      const sprints: Sprint[] = sprintsFromJira.map(sprint => {
-        return {
-          id: sprint.id,
-          name: sprint.name,
-          boardId: sprint.originBoardId,
-        }
-      })
+      const jiraSprints = await jiraClient.getSprints(boardIds);
+      const sprints = jiraSprintsToSprints(jiraSprints);
 
       return res.json(sprints);
     } catch(e) {
