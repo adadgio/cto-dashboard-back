@@ -1,11 +1,8 @@
 export default class ApiError extends Error {
-  message: string = "Unknown error";
+  errorMessage: string = "Unknown error";
 
-  constructor(messageOrError: Error | string) {
-    super(messageOrError.toString());
-
-    console.error("error", messageOrError);
-
-    this.message = messageOrError.toString();
+  constructor(message: any) {
+    super(message.toString());
+    this.name = "ApiError";
   }
 }

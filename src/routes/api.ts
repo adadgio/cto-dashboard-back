@@ -1,4 +1,4 @@
-import { Router, RequestHandler, Request, Response } from 'express';
+import { Router, RequestHandler, Request, Response, NextFunction } from 'express';
 import JiraClient from '../JiraClient';
 import { jiraSprintsToSprints } from '../services/JiraDataTranslators'
 import ApiError from '../ApiError';
@@ -10,19 +10,19 @@ const routeFactory = (jiraClient: JiraClient) => {
   /**
    * @returns all boards
    */
-  router.get('/projectList', async (req:Request, res:Response)=>{
+  router.get('/projectList', async (req:Request, res:Response, next: NextFunction)=>{
     try {
       const boards = await jiraClient.getBoards();
       return res.json(boards);
     } catch(e: any) {
-      res.status(500).json(new ApiError(e));
+      next(new ApiError(e));
     }
   });
 
   /**
    * @returns all sprints according to boardList.
    */
-  router.get('/sprintList', async (req:Request, res:Response)=>{
+  router.get('/sprintList', async (req:Request, res:Response, next: NextFunction)=>{
     if (!req.query.boardIds)
       return res.status(500).json(new ApiError("No board id provided"));
 
@@ -34,15 +34,15 @@ const routeFactory = (jiraClient: JiraClient) => {
 
       return res.json(sprints);
     } catch(e: any) {
-      res.status(500).json(new ApiError(e));
+      next(new ApiError(e));
     }
   });
 
-  router.get('/issueList', async (req:Request, res:Response)=>{
+  router.get('/issueList', async (req:Request, res:Response, next: NextFunction)=>{
     try {
       return res.json(await jiraClient.getIssues(req.params.boardId));
     } catch(e: any) {
-      res.status(500).json(new ApiError(e));
+      next(new ApiError(e));
     }
   });
 

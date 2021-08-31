@@ -1,4 +1,4 @@
-import express from 'express';
+import express, {ErrorRequestHandler} from 'express';
 
 import conf from './Configuration';
 import JiraClient from './JiraClient';
@@ -14,4 +14,17 @@ const apiRouter = apiRoutesFactory(jiraClient);
 
 app.use(authRouter);
 app.use(apiRouter);
+
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  console.error(err)
+
+  if (conf.NODE_ENV === "production") {
+    res.status(500).json({ error: "Internal server error."});
+  }
+  else {
+    res.status(500).send({ error: err.toString() })
+  }
+}
+
+app.use(errorHandler);
 
