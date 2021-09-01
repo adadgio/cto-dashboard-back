@@ -309,9 +309,13 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cto-dashboard-model/cto-dashboard-model@https://github.com/adadgio/cto-dashboard-model":
+"@cto-dashboard-model/cto-dashboard-model@https://github.com/adadgio/cto-dashboard-model#7e7ca5c54525a8779d42b9b150642a52001e83ed":
+  version "1.1.2"
+  resolved "https://github.com/adadgio/cto-dashboard-model#7e7ca5c54525a8779d42b9b150642a52001e83ed"
+
+"@cto-dashboard-model/cto-dashboard-model@https://github.com/adadgio/cto-dashboard-model#abee888abca5c2973b33b8b3260c4f7772e7ea47":
   version "1.1.1"
-  resolved "https://github.com/adadgio/cto-dashboard-model#371a8128332ef86bf055b77c166ac50e8adf441e"
+  resolved "https://github.com/adadgio/cto-dashboard-model#abee888abca5c2973b33b8b3260c4f7772e7ea47"
 
 "@hapi/hoek@^9.0.0":
   version "9.2.0"
