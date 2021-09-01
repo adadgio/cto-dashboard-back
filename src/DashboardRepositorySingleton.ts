@@ -51,16 +51,18 @@ class DashboardRepository {
           queries.push(`
            MATCH (i:Issue {id: $id})
            MATCH (b:Board {id: $boardId})
+           MATCH (s:Sprint {id: $sprintId})
            MERGE (i)-[:BELONGS_TO]->(b)
+           MERGE (i)-[:BELONGS_TO]->(s)
          `)
         }
 
-        console.info("merging issue", issue.id, "to board id", issue.boardId, "with query", queries);
         return Promise.all(
           queries.map(query =>
             transaction.run(query, {
             ...issue,
-            boardId: issue.boardId?.toString() || null //neo4j automatically converts ints to float
+            boardId: issue.boardId?.toString() || null, //neo4j automatically converts ints to float
+            sprintId: issue.sprintId?.toString() || null
           })
          )
       )

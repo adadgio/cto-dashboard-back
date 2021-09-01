@@ -21,6 +21,7 @@ export const jiraIssues = (jiraIssues: JiraIssue[]) => {
       name:issue.fields.summary,
       status:issue.fields.status.name,
       type:issue.fields.issuetype.name,
+      sprintId: issue.fields.sprint?.id || null
     }
   })
   return issues;
