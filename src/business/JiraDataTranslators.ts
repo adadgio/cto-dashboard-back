@@ -1,7 +1,7 @@
 import { Issue, Sprint } from "@cto-dashboard-model/cto-dashboard-model";
 import { JiraIssue, JiraSprint } from '../../types/Jira';
 
-export const jiraSprints = (jiraSprints: JiraSprint[]) => {
+export const jiraSprints = (jiraSprints: JiraSprint[]): Sprint[] => {
   const sprints: Sprint[] = jiraSprints.map(sprint => {
     return {
       id: sprint.id,
@@ -17,7 +17,7 @@ export const jiraSprints = (jiraSprints: JiraSprint[]) => {
   return sprints;
 }
 
-export const jiraIssues = (jiraIssues: JiraIssue[]) => {
+export const jiraIssues = (jiraIssues: JiraIssue[]): Issue[] => {
   const issues: Issue[] = jiraIssues.map(issue => {
     // Keeping this commented out in case we want to add more data later
     /*

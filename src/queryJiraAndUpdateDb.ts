@@ -24,22 +24,25 @@ const main = async () => {
   const sprints = translators.jiraSprints(jiraSprints);
 
 
-  console.info("boards:", jiraBoards.map(e => ({id: e.id, pId: e.location.projectId, name: e.name})));
+  console.info("number of boards:", jiraBoards.length);
   console.info("number of issues:", issues.length);
-  issues.forEach(e => console.debug(JSON.stringify({id: e.id, pId: e.projectId, name: e.name})) );
   console.info("number of sprints:", sprints.length);
-  sprints.forEach(e => console.debug(JSON.stringify({id: e.id, bId: e.boardId, name: e.name})) );
 
 
   for (let board of jiraBoards) {
+    console.debug("adding board", {id: board.id, pId: board.location.projectId, name: board.name})
     await dashboardRepositorySingleton.addBoard(board);
   }
 
   for (let sprint of sprints) {
+    console.debug("adding sprint", JSON.stringify({id: sprint.id, boardId: sprint.boardId, name: sprint.name}));
     await dashboardRepositorySingleton.addSprint(sprint);
   }
 
+  console.debug("adding issues");
+  issues.forEach(e => console.debug(JSON.stringify({id: e.id, pId: e.projectId, name: e.name})) );
   await dashboardRepositorySingleton.addIssuesAndBoards(issues)
+
 
   console.log("nb bugs:", await dashboardRepositorySingleton.countIssuesWithType("Bug"));
   console.log("nb done:", await dashboardRepositorySingleton.countIssuesWithStatus("Done"));
