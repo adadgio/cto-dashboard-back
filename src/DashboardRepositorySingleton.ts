@@ -1,4 +1,4 @@
-import {Issue} from '@cto-dashboard-model/cto-dashboard-model';
+import {Issue, Sprint} from '@cto-dashboard-model/cto-dashboard-model';
 import neo4j, { Driver, Session } from 'neo4j-driver';
 
 import conf from './ConfigurationSingleton';
@@ -101,8 +101,24 @@ class DashboardRepository {
         }
       })
     }
-
   }
+
+  async addSprint(sprint: Sprint) {
+    await this.session.run({
+      text: `
+        MERGE (b:Board {id: $boardId})
+        MERGE (s:Sprint {id: $id})
+        SET s.name = $name
+        MERGE (s)-[:BELONGS_TO]->(b)
+      `,
+      parameters: {
+        id: sprint.id.toString(),
+        boardId: sprint.boardId.toString(),
+        name: sprint.name
+      }
+    })
+  }
+
 
   async countIssuesWithStatus(status: "Done" | "To Do" | "In Progress"): Promise<number> {
     const result = await this.session.run('MATCH (n:Issue {status: $status}) RETURN count(n)', {status});

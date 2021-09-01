@@ -17,14 +17,22 @@ const main = async () => {
   console.log("querying JIRA API for issues");
   const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
   const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
-
   const issues = translators.jiraIssues(jiraIssues);
+
+  console.log("querying JIRA API for sprints");
+  const jiraSprintsPromises = boardIds.map(id => jiraClient.getSprintsOfBoard(id));
+  const jiraSprints = await waitAndFlatten(jiraSprintsPromises);
+  const sprints = translators.jiraSprints(jiraSprints);
 
   console.log("all issues over", jiraBoards.length, "boards:");
   console.log(issues.map(i => i.id));
 
   for (let board of jiraBoards) {
     await dashboardRepositorySingleton.addBoard(board);
+  }
+
+  for (let sprint of sprints) {
+    await dashboardRepositorySingleton.addSprint(sprint);
   }
 
   await dashboardRepositorySingleton.addIssuesAndBoards(issues)
