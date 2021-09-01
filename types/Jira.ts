@@ -41,11 +41,21 @@ export type JiraBoard = {
 export type JiraIssue = {
   id: number,
   fields:{
+    created: string,
+    updated: string,
+    duedate?: string,
+    summary: string,
     sprint:JiraSprint | null,
-    summary:string
+
+    //TODO: status and issuetype are actually customizable entities with an id and everything,
+    //so we might want to handle them as such too?
     status: {
-      name:"Todo" | "Done"
+      name: string,
+      id: string,
     },
-    type: "Bug" | "Feature",
+    issuetype: {
+      name: string,
+      id: string
+    },
   },
 }

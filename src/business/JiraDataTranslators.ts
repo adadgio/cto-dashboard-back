@@ -20,7 +20,7 @@ export const jiraIssues = (jiraIssues: JiraIssue[]) => {
       boardId:issue.fields.sprint?.originBoardId || null,
       name:issue.fields.summary,
       status:issue.fields.status.name,
-      type:issue.fields.type,
+      type:issue.fields.issuetype.name,
     }
   })
   return issues;
