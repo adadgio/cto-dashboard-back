@@ -28,6 +28,8 @@ const main = async () => {
   }
 
   await dashboardRepositorySingleton.addIssuesAndBoards(issues)
+
+  console.log("done");
   await dashboardRepositorySingleton.close();
 }
 
