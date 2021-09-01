@@ -31,11 +31,6 @@ export default class JiraClient {
     return boards;
   }
 
-  async getBoard(boardId: number) {
-    const result = await this.jiraRequest<JiraApiReturnValues<any>>(`/rest/agile/1.0/board/${boardId}`);
-    return result;
-  }
-
   async getSprintsOfBoard(boardId: number): Promise<JiraSprint[]> {
     //TODO: handle pagination
 
