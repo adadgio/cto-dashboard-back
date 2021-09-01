@@ -7,6 +7,10 @@ export const jiraSprints = (jiraSprints: JiraSprint[]) => {
       id: sprint.id,
       name: sprint.name,
       boardId: sprint.originBoardId,
+
+      startDate: sprint.startDate,
+      endDate: sprint.endDate,
+      completeDate: sprint.completeDate
     }
   })
 

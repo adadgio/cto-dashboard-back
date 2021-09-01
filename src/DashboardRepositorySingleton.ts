@@ -82,17 +82,21 @@ class DashboardRepository {
   }
 
   async addSprint(sprint: Sprint) {
+    const {id, boardId, ...data} = sprint;
+
     await this.session.run({
       text: `
+        UNWIND $data as properties
         MERGE (b:Board {id: $boardId})
         MERGE (s:Sprint {id: $id})
-        SET s.name = $name
         MERGE (s)-[:BELONGS_TO]->(b)
+        SET s = properties,
+            s.id = $id
       `,
       parameters: {
-        id: sprint.id.toString(),
-        boardId: sprint.boardId.toString(),
-        name: sprint.name
+        id: id.toString(),
+        boardId: boardId.toString(),
+        data
       }
     })
   }
