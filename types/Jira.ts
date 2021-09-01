@@ -53,9 +53,20 @@ export type JiraIssue = {
       name: string,
       id: string,
     },
+    resolution: { name: string, id: string },
+    project: {
+      name: string,
+      id: number
+    },
     issuetype: {
       name: string,
       id: string
+    },
+    closedSprints: JiraSprint[],
+    labels: string[],
+    priority: {
+      name: string,
+      id: string,
     },
   },
 }

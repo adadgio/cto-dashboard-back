@@ -23,7 +23,7 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "@cto-dashboard-model/cto-dashboard-model": "https://github.com/adadgio/cto-dashboard-model#v1.2.1",
+    "@cto-dashboard-model/cto-dashboard-model": "https://github.com/adadgio/cto-dashboard-model#1.4.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",

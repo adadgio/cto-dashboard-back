@@ -11,7 +11,6 @@ const main = async () => {
   console.log("querying JIRA API for boards");
   const jiraBoards = await jiraClient.getBoards();
   //TODO: process/translate boards data?
-  //
   const boardIds = jiraBoards.map(board => board.id);
 
   console.log("querying JIRA API for issues");
@@ -24,8 +23,13 @@ const main = async () => {
   const jiraSprints = await waitAndFlatten(jiraSprintsPromises);
   const sprints = translators.jiraSprints(jiraSprints);
 
-  console.log("all issues over", jiraBoards.length, "boards:");
-  console.log(issues.map(i => i.id));
+
+  console.info("boards:", jiraBoards.map(e => ({id: e.id, pId: e.location.projectId, name: e.name})));
+  console.info("number of issues:", issues.length);
+  issues.forEach(e => console.debug(JSON.stringify({id: e.id, pId: e.projectId, name: e.name})) );
+  console.info("number of sprints:", sprints.length);
+  sprints.forEach(e => console.debug(JSON.stringify({id: e.id, bId: e.boardId, name: e.name})) );
+
 
   for (let board of jiraBoards) {
     await dashboardRepositorySingleton.addBoard(board);

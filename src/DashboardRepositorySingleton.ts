@@ -31,29 +31,25 @@ class DashboardRepository {
       issues.map(issue => {
         const queries = [
           `MERGE (i:Issue {id: $id})
+           MERGE (p:Project {id: $projectId})
+           MERGE (i)-[:BELONGS_TO]->(p)
            SET i.name = $name,
                i.status = $status,
                i.type = $type
           `
         ];
 
-        if (issue.boardId) {
-          queries.push('MERGE (:Board {id: $boardId})');
-          queries.push(`
+        queries.push(`
            MATCH (i:Issue {id: $id})
-           MATCH (b:Board {id: $boardId})
-           MATCH (s:Sprint {id: $sprintId})
-           MERGE (i)-[:BELONGS_TO]->(b)
+           UNWIND $allSprintIds AS sprintId
+           MERGE (s:Sprint {id: sprintId})
            MERGE (i)-[:BELONGS_TO]->(s)
-         `)
-        }
+        `);
 
         return Promise.all(
           queries.map(query =>
             transaction.run(query, {
             ...issue,
-            boardId: issue.boardId?.toString() || null, //neo4j automatically converts ints to float
-            sprintId: issue.sprintId?.toString() || null
           })
          )
       )
