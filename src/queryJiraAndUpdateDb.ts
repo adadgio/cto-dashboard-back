@@ -37,18 +37,34 @@ const main = async () => {
   console.log(issues.map(i => i.id));
 
 
+  console.log("setting schema");
+  await session.run('CREATE CONSTRAINT unique_issue_id IF NOT EXISTS ON (n:Issue) ASSERT n.id IS UNIQUE')
+  await session.run('CREATE CONSTRAINT unique_board_id IF NOT EXISTS ON (n:Board) ASSERT n.id IS UNIQUE')
 
   const transaction = session.beginTransaction();
 
+
   const result = await Promise.all(
     issues.map(issue => {
-      let queryStr = 'MERGE (iss:Issue {name : $name, id: $id})';
-      if (issue.boardId)
-        queryStr += '-[blgrel:BELONGS_TO]->(brd:Board {id: $boardId})';
-      queryStr += ' RETURN iss';
+      const queries = [ 'MERGE (:Issue {id: $id, name: $name})' ];
+      if (issue.boardId) {
+        queries.push('MERGE (:Board {id: $boardId})');
+        queries.push(`
+         MATCH (i:Issue {id: $id})
+         MATCH (b:Board {id: $boardId})
+         MERGE (i)-[:BELONGS_TO]->(b)
+       `)
+      }
 
-      console.log("merging issue", issue.id, "to board id", issue.boardId, queryStr);
-      return transaction.run(queryStr, {...issue, boardId: issue.boardId?.toString() || null})
+      console.log("merging issue", issue.id, "to board id", issue.boardId, "with query", queries);
+      return Promise.all(
+        queries.map(query =>
+          transaction.run(query, {
+          ...issue,
+          boardId: issue.boardId?.toString() || null //neo4j automatically converts ints to float
+        })
+       )
+    )
     })
   );
 
