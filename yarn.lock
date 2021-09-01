@@ -309,10 +309,6 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cto-dashboard-model/cto-dashboard-model@https://github.com/adadgio/cto-dashboard-model#latest":
-  version "1.2.0"
-  resolved "https://github.com/adadgio/cto-dashboard-model#48c8f6fa3730dffdae9c2ba87b7d4c750bff42f2"
-
 "@cto-dashboard-model/cto-dashboard-model@https://github.com/adadgio/cto-dashboard-model#v1.2.1":
   version "1.2.1"
   resolved "https://github.com/adadgio/cto-dashboard-model#2463804e35c9c52f106d4cc9560280353930a33a"

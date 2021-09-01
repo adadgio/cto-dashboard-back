@@ -131,6 +131,34 @@ class DashboardRepository {
     const result = await this.session.run('MATCH (n:Issue {type: $type}) RETURN count(n)', {type});
     return result.records[0].get('count(n)');
   }
+  async fetchIssuesList(boardIds:number[]){
+    const queries = boardIds.map(boardId => 
+        this.session.run('MATCH (b:Board {id:$id})<--(i:Issue) RETURN b as board, collect(i) as issues', {id:boardId.toString()})
+      );
+      try{
+        let result = await Promise.all(queries);
+        const finalResult:Issue[][] = result.flatMap(result => result.records).map(node =>{
+              const boardId = node.get("board").properties.id;
+              let issueArray:Issue[] = [];
+              for(const issue of node.get("issues")){
+                  issueArray.push({
+                    id:issue.properties.id,
+                    boardId:boardId,
+                    sprintId:null,
+                    name:issue.properties.name,
+                    type:issue.properties.type,
+                    status:issue.properties.status
+                  })
+              }
+              return issueArray;
+            }
+          );
+        return finalResult.flat();
+      }catch(e:any){
+        console.log("erreur ",e);
+        return e;
+      }
+  }
 }
 
 const dashboardRepositorySingleton = new DashboardRepository();
