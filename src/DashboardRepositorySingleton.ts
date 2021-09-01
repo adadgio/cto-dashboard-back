@@ -62,6 +62,13 @@ class DashboardRepository {
 
     await transaction.commit();
   }
+
+  async addBoard(board: any) {
+    return this.session.run("MERGE (:Board {id: $id, name: $name})", {
+      ...board,
+      id: board.id.toString() //neo4j automatically converts ints to float
+    })
+  }
 }
 
 const dashboardRepositorySingleton = new DashboardRepository();

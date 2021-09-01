@@ -23,6 +23,10 @@ const main = async () => {
   console.log("all issues over", jiraBoards.length, "boards:");
   console.log(issues.map(i => i.id));
 
+  for (let board of jiraBoards) {
+    await dashboardRepositorySingleton.addBoard(board);
+  }
+
   await dashboardRepositorySingleton.addIssuesAndBoards(issues)
   await dashboardRepositorySingleton.close();
 }
