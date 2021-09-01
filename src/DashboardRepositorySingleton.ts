@@ -38,7 +38,14 @@ class DashboardRepository {
 
     const result = await Promise.all(
       issues.map(issue => {
-        const queries = [ 'MERGE (i:Issue {id: $id}) SET i.name = $name, i.status = $status, i.type = $type' ];
+        const queries = [
+          `MERGE (i:Issue {id: $id})
+           SET i.name = $name,
+               i.status = $status,
+               i.type = $type
+          `
+        ];
+
         if (issue.boardId) {
           queries.push('MERGE (:Board {id: $boardId})');
           queries.push(`
