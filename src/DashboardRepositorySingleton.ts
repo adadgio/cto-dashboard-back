@@ -18,15 +18,6 @@ class DashboardRepository {
       database: conf.neo4jDatabase,
       defaultAccessMode: neo4j.session.WRITE
     })
-
-    this.setSchema();
-  }
-
-  private async setSchema() {
-    console.info("setting schema");
-
-    await this.session.run('CREATE CONSTRAINT unique_issue_id IF NOT EXISTS ON (n:Issue) ASSERT n.id IS UNIQUE')
-    await this.session.run('CREATE CONSTRAINT unique_board_id IF NOT EXISTS ON (n:Board) ASSERT n.id IS UNIQUE')
   }
 
   close() {
