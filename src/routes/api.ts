@@ -1,7 +1,8 @@
 import { Router, RequestHandler, Request, Response, NextFunction } from 'express';
 import JiraClient from '../business/JiraClient';
-import { jiraSprintsToSprints } from '../business/JiraDataTranslators'
+import * as translators from '../business/JiraDataTranslators'
 import ApiError from '../ApiError';
+import {waitAndFlatten} from '../utils';
 
 
 const routeFactory = (jiraClient: JiraClient) => {
@@ -29,8 +30,9 @@ const routeFactory = (jiraClient: JiraClient) => {
     const boardIds = (req.query.boardIds as string).split(",").map(Number);
 
     try {
-      const jiraSprints = await jiraClient.getSprints(boardIds);
-      const sprints = jiraSprintsToSprints(jiraSprints);
+      const jiraSprintsPromises = boardIds.map(id => jiraClient.getSprintsOfBoard(id));
+      const jiraSprints = await waitAndFlatten(jiraSprintsPromises);
+      const sprints = translators.jiraSprints(jiraSprints);
 
       return res.json(sprints);
     } catch(e: any) {
@@ -39,8 +41,17 @@ const routeFactory = (jiraClient: JiraClient) => {
   });
 
   router.get('/issueList', async (req:Request, res:Response, next: NextFunction)=>{
+    if (!req.query.boardIds)
+      return res.status(500).json(new ApiError("No board id provided"));
+
+    const boardIds = (req.query.boardIds as string).split(",").map(Number);
+
     try {
-      return res.json(await jiraClient.getIssues(req.params.boardId));
+      const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
+      const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
+      const issues = translators.jiraIssues(jiraIssues);
+
+      return res.json(issues);
     } catch(e: any) {
       next(new ApiError(e));
     }
