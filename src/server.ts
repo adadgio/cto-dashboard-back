@@ -1,4 +1,5 @@
 import express from 'express';
+const cors = require('cors');
 
 import conf from './ConfigurationSingleton';
 import JiraClient from './business/JiraClient';
@@ -15,6 +16,7 @@ export const app = express();
 // Bodyparser - traite les requêtes.
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json({limit: '50mb'}));
+app.use(cors())
 
 const authRouter = authRoutesFactory();
 const apiRouter = apiRoutesFactory(jiraClient);
