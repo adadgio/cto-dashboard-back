@@ -38,7 +38,7 @@ class DashboardRepository {
 
     const result = await Promise.all(
       issues.map(issue => {
-        const queries = [ 'MERGE (:Issue {id: $id, name: $name})' ];
+        const queries = [ 'MERGE (i:Issue {id: $id, name: $name}) SET i.status = $status' ];
         if (issue.boardId) {
           queries.push('MERGE (:Board {id: $boardId})');
           queries.push(`
@@ -68,6 +68,16 @@ class DashboardRepository {
       ...board,
       id: board.id.toString() //neo4j automatically converts ints to float
     })
+  }
+
+  async countIssuesWithStatus(status: "Done" | "To Do" | "In Progress"): Promise<number> {
+    const result = await this.session.run('MATCH (n:Issue {status: $status}) RETURN count(n)', {status});
+    return result.records[0].get('count(n)');
+  }
+
+  async countIssuesWithType(type: "Bug" | "Feature"): Promise<number> {
+    const result = await this.session.run('MATCH (n:Issue {type: $type}) RETURN count(n)', {type});
+    return result.records[0].get('count(n)');
   }
 }
 
