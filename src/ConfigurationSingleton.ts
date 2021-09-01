@@ -10,6 +10,10 @@ export const configurationSchema = Joi.object({
   jiraUser: Joi.string().required(),
   jiraToken: Joi.string().required(),
   jiraHost: Joi.string().required(),
+  neo4jHost: Joi.string().required(),
+  neo4jUsername: Joi.string().required(),
+  neo4jPassword: Joi.string().required(),
+  neo4jDatabase: Joi.string().required(),
 });
 
 //TODO: find a way to avoid repetitive type (validating at compile time) + schema (validating at execution time)
@@ -19,6 +23,10 @@ type Configuration = {
   jiraUser: string,
   jiraToken: string,
   jiraHost: string,
+  neo4jHost: string,
+  neo4jUsername: string,
+  neo4jPassword: string,
+  neo4jDatabase: string,
 }
 
 const validationResult = configurationSchema.validate({
@@ -27,6 +35,10 @@ const validationResult = configurationSchema.validate({
   jiraUser: process.env.JIRA_USER,
   jiraToken: process.env.JIRA_TOKEN,
   jiraHost: process.env.JIRA_HOST,
+  neo4jHost: process.env.NEO4J_HOST,
+  neo4jUsername: process.env.NEO4J_USERNAME,
+  neo4jPassword: process.env.NEO4J_PASSWORD,
+  neo4jDatabase: process.env.NEO4J_DATABASE,
 });
 
 if (validationResult.error) {
