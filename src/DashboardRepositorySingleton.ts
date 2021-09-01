@@ -64,10 +64,37 @@ class DashboardRepository {
   }
 
   async addBoard(board: any) {
-    return this.session.run("MERGE (:Board {id: $id, name: $name})", {
-      ...board,
-      id: board.id.toString() //neo4j automatically converts ints to float
-    })
+    // `SET board = $board` will assign all props in the board object to the node
+    await this.session.run("MERGE (b:Board {id: $board.id}) SET b = $board", {
+      board: {
+        id: board.id.toString(), //neo4j automatically converts ints to float
+        name: board.name,
+        projectId: board.location?.projectId.toString() || null //TODO: translate board and get projects?
+      }
+    });
+
+    //TODO: understand Jira's model. Do boards always have a project? What is a `location`?
+    if (board.location?.projectId) {
+      await this.session.run("MERGE (p:Project {id: $project.id}) SET p = $project", {
+        project: {
+          id: board.location.projectId.toString(),
+          name: board.location.name
+        }
+      })
+
+      await this.session.run({
+        text: `
+          MATCH (b:Board {id: $boardId})
+          MATCH (p:Project {id: $projectId})
+          MERGE (b)-[:BELONGS_TO]->(p)
+        `,
+        parameters: {
+          boardId: board.id.toString(),
+          projectId: board.location.projectId.toString(),
+        }
+      })
+    }
+
   }
 
   async countIssuesWithStatus(status: "Done" | "To Do" | "In Progress"): Promise<number> {
