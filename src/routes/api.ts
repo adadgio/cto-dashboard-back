@@ -58,7 +58,6 @@ const routeFactory = (jiraClient: JiraClient) => {
   });
 
   return router;
-}
+};
 
 export default routeFactory;
-
