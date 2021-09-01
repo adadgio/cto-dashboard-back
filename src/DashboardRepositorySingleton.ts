@@ -25,38 +25,27 @@ class DashboardRepository {
   }
 
   async addIssuesAndBoards (issues: Issue[])  {
-  const transaction = this.session.beginTransaction();
+    const transaction = this.session.beginTransaction();
 
-    const result = await Promise.all(
-      issues.map(issue => {
-        const queries = [
-          `MERGE (i:Issue {id: $id})
-           MERGE (p:Project {id: $projectId})
-           MERGE (i)-[:BELONGS_TO]->(p)
-           SET i.name = $name,
-               i.status = $status,
-               i.type = $type
-          `
-        ];
+    issues.forEach(issue => {
+      transaction.run(`
+        MERGE (i:Issue {id: $id})
+        MERGE (p:Project {id: $projectId})
+        MERGE (i)-[:BELONGS_TO]->(p)
+        SET i.name = $name,
+            i.status = $status,
+            i.type = $type
+      `, issue);
 
-        queries.push(`
-           MATCH (i:Issue {id: $id})
-           UNWIND $allSprintIds AS sprintId
-           MERGE (s:Sprint {id: sprintId})
-           MERGE (i)-[:BELONGS_TO]->(s)
-        `);
+      transaction.run(`
+        MATCH (i:Issue {id: $id})
+        UNWIND $allSprintIds AS sprintId
+        MERGE (s:Sprint {id: sprintId})
+        MERGE (i)-[:BELONGS_TO]->(s)
+      `, issue);
+    })
 
-        return Promise.all(
-          queries.map(query =>
-            transaction.run(query, {
-            ...issue,
-          })
-         )
-      )
-      })
-    );
-
-    await transaction.commit();
+    return await transaction.commit();
   }
 
   async addBoard(board: any) {
