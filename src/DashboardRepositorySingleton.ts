@@ -25,42 +25,27 @@ class DashboardRepository {
   }
 
   async addIssuesAndBoards (issues: Issue[])  {
-  const transaction = this.session.beginTransaction();
+    const transaction = this.session.beginTransaction();
 
-    const result = await Promise.all(
-      issues.map(issue => {
-        const queries = [
-          `MERGE (i:Issue {id: $id})
-           SET i.name = $name,
-               i.status = $status,
-               i.type = $type
-          `
-        ];
+    issues.forEach(issue => {
+      transaction.run(`
+        MERGE (i:Issue {id: $id})
+        MERGE (p:Project {id: $projectId})
+        MERGE (i)-[:BELONGS_TO]->(p)
+        SET i.name = $name,
+            i.status = $status,
+            i.type = $type
+      `, issue);
 
-        if (issue.boardId) {
-          queries.push('MERGE (:Board {id: $boardId})');
-          queries.push(`
-           MATCH (i:Issue {id: $id})
-           MATCH (b:Board {id: $boardId})
-           MATCH (s:Sprint {id: $sprintId})
-           MERGE (i)-[:BELONGS_TO]->(b)
-           MERGE (i)-[:BELONGS_TO]->(s)
-         `)
-        }
+      transaction.run(`
+        MATCH (i:Issue {id: $id})
+        UNWIND $allSprintIds AS sprintId
+        MERGE (s:Sprint {id: sprintId})
+        MERGE (i)-[:BELONGS_TO]->(s)
+      `, issue);
+    })
 
-        return Promise.all(
-          queries.map(query =>
-            transaction.run(query, {
-            ...issue,
-            boardId: issue.boardId?.toString() || null, //neo4j automatically converts ints to float
-            sprintId: issue.sprintId?.toString() || null
-          })
-         )
-      )
-      })
-    );
-
-    await transaction.commit();
+    return await transaction.commit();
   }
 
   async addBoard(board: any) {
@@ -97,17 +82,22 @@ class DashboardRepository {
   }
 
   async addSprint(sprint: Sprint) {
+    const {id, boardId, ...data} = sprint;
+
     await this.session.run({
       text: `
         MERGE (b:Board {id: $boardId})
         MERGE (s:Sprint {id: $id})
-        SET s.name = $name
         MERGE (s)-[:BELONGS_TO]->(b)
+        WITH s
+        UNWIND $data as properties
+        SET s = properties,
+            s.id = $id
       `,
       parameters: {
-        id: sprint.id.toString(),
-        boardId: sprint.boardId.toString(),
-        name: sprint.name
+        id: id.toString(),
+        boardId: boardId.toString(),
+        data
       }
     })
   }
