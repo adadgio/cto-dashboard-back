@@ -96,7 +96,7 @@ class DashboardRepository {
       `,
       parameters: {
         id: id.toString(),
-        boardId: boardId.toString(),
+        boardId: boardId?.toString(),
         data
       }
     })
@@ -139,8 +139,7 @@ class DashboardRepository {
             const issueTab:Issue[] = query.records.map(record =>{
                 let issueArray:Issue[] = [];
                 for(const issue of record.get('issues')){
-                  issueArray.push({
-                    boardId:null,
+                  issueArray.push(<Issue>{
                     id:issue.id,
                     sprintId: record.get('sId'),
                     name:issue.name,
