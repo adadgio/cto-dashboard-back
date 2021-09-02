@@ -3,6 +3,7 @@ import JiraClient from '../business/JiraClient';
 import * as translators from '../business/JiraDataTranslators'
 import ApiError from '../ApiError';
 import {waitAndFlatten} from '../utils';
+import dashboardRepositorySingleton from '../DashboardRepositorySingleton';
 
 
 const routeFactory = (jiraClient: JiraClient) => {
@@ -47,11 +48,11 @@ const routeFactory = (jiraClient: JiraClient) => {
     const boardIds = (req.query.boardIds as string).split(",").map(Number);
 
     try {
-      const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
-      const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
-      const issues = translators.jiraIssues(jiraIssues);
-
-      return res.json(issues);
+      // const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
+      // const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
+      const result = await dashboardRepositorySingleton.fetchIssuesList(boardIds);
+      // const issues = translators.jiraIssues(jiraIssues);
+      return res.json(result);
     } catch(e: any) {
       next(new ApiError(e));
     }
