@@ -182,7 +182,7 @@ class DashboardRepository {
           type:issue.type
         }
       })
-    )
+    ).flat();
 
     return issueTab;
   }
@@ -208,7 +208,7 @@ class DashboardRepository {
           completeDate: sprint.properties.completeDate,
         };
       })
-    );
+    ).flat();
 
     return projectSprintList;
   }
