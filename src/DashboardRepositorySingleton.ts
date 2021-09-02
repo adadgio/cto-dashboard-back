@@ -155,7 +155,6 @@ class DashboardRepository {
           );
         return finalResult.flat();
       }catch(e:any){
-        console.log("erreur ",e);
         return e;
       }
   }

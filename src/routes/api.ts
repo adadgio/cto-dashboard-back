@@ -54,7 +54,7 @@ const routeFactory = (jiraClient: JiraClient) => {
       // console.log("request inside neo4j db");
       // console.log(result);
       const issues = translators.jiraIssues(jiraIssues);
-      return res.json(issues);
+      return res.json(result);
     } catch(e: any) {
       next(new ApiError(e));
     }
