@@ -43,12 +43,6 @@ const main = async () => {
   issues.forEach(e => console.debug(JSON.stringify({id: e.id, pId: e.projectId, name: e.name})) );
   await dashboardRepositorySingleton.addIssuesAndBoards(issues)
 
-
-  console.log("nb bugs:", await dashboardRepositorySingleton.countIssuesWithType("Bug"));
-  console.log("nb done:", await dashboardRepositorySingleton.countIssuesWithStatus("Done"));
-  console.log("nb in progress:", await dashboardRepositorySingleton.countIssuesWithStatus("In Progress"));
-  console.log("nb todo:", await dashboardRepositorySingleton.countIssuesWithStatus("To Do"));
-
   console.log("done");
   await dashboardRepositorySingleton.close();
 }
