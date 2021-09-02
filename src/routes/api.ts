@@ -25,32 +25,34 @@ const routeFactory = (jiraClient: JiraClient) => {
    * @returns all sprints according to boardList.
    */
   router.get('/sprintList', async (req:Request, res:Response, next: NextFunction)=>{
-    if (!req.query.boardIds)
-      return res.status(500).json(new ApiError("No board id provided"));
+    if (!req.query.projectIds)
+      return res.status(500).json(new ApiError("No projectIds provided"));
 
-    const boardIds = (req.query.boardIds as string).split(",").map(Number);
-
+    const projectIds = (req.query.projectIds as string).split(",").map(Number);
+ 
     try {
-      const jiraSprintsPromises = boardIds.map(id => jiraClient.getSprintsOfBoard(id));
-      const jiraSprints = await waitAndFlatten(jiraSprintsPromises);
-      const sprints = translators.jiraSprints(jiraSprints);
+      // const jiraSprintsPromises = projectIds.map(id => jiraClient.getSprintsOfBoard(id));
+      // const jiraSprints = await waitAndFlatten(jiraSprintsPromises);
+      // const sprints = translators.jiraSprints(jiraSprints);
 
-      return res.json(sprints);
+      const result = await dashboardRepositorySingleton.fetchProjectSprintList(projectIds)
+
+      return res.json(result);
     } catch(e: any) {
       next(new ApiError(e));
     }
   });
 
   router.get('/issueList', async (req:Request, res:Response, next: NextFunction)=>{
-    if (!req.query.boardIds)
-      return res.status(500).json(new ApiError("No board id provided"));
+    if (!req.query.sprintIds)
+      return res.status(500).json(new ApiError("No sprintIds provided"));
 
-    const boardIds = (req.query.boardIds as string).split(",").map(Number);
+    const sprintIds = (req.query.sprintIds as string).split(",").map(Number);
 
     try {
       // const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
       // const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
-      const result = await dashboardRepositorySingleton.fetchIssuesList(boardIds);
+      const result = await dashboardRepositorySingleton.fetchIssuesList(sprintIds);
       // const issues = translators.jiraIssues(jiraIssues);
       return res.json(result);
     } catch(e: any) {

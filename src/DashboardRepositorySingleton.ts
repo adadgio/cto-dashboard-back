@@ -131,8 +131,8 @@ class DashboardRepository {
     const result = await this.session.run('MATCH (n:Issue {type: $type}) RETURN count(n)', {type});
     return result.records[0].get('count(n)');
   }
-  async fetchIssuesList(boardIds:number[]){
-      const query = await this.session.run('MATCH (s:Sprint)<-[BELONGS_TO]-(i:Issue) WHERE s.id IN $tabId RETURN s.id AS sId, s.name AS sName, collect({id:i.id, name:i.name, status:i.status, type:i.type}) as issues', {tabId:boardIds.map(String)})
+  async fetchIssuesList(sprintIds:number[]) {
+      const query = await this.session.run('MATCH (s:Sprint)<-[BELONGS_TO]-(i:Issue) WHERE s.id IN $tabId RETURN s.id AS sId, s.name AS sName, collect({id:i.id, name:i.name, status:i.status, type:i.type}) as issues', {tabId:sprintIds.map(String)})
       try{
             const issueTab:Issue[] = query.records.map(record =>{
                 let issueArray:Issue[] = [];
@@ -154,6 +154,31 @@ class DashboardRepository {
         console.log(e);
         return e;
       }
+  }
+
+  async fetchProjectSprintList(projectIds:number[]) {
+    const query = await this.session.run('MATCH(p:Project)<-[:BELONGS_TO]-(b:Board)<-[:BELONGS_TO]-(s:Sprint) WHERE p.id IN $tabId return p as project, b as board, collect(s) as sprintByBoard', {tabId:projectIds.map(String)});
+    try{
+      const projectSprintList:Sprint[] = query.records.map(record =>{
+        let tabSprint:Sprint[] = [];
+        for(const sprint of record.get('sprintByBoard')){
+          tabSprint.push({
+            id:sprint.properties.id,
+            boardId:undefined,
+            completeDate:sprint.properties.completeDate,
+            endDate:sprint.properties.endDate,
+            name:sprint.properties.name,
+            projectId:record.get('project').properties.id,
+            startDate:sprint.properties.startDate
+          });
+        }
+        return tabSprint;
+      }).flat();
+      return projectSprintList;
+    }catch(e){
+      console.log(e);
+      return e;
+    }
   }
 }
 
