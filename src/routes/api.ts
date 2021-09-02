@@ -30,7 +30,7 @@ const routeFactory = (jiraClient: JiraClient) => {
       return res.status(500).json(new ApiError("No projectIds provided"));
  
     try {
-      const projectIds = (req.query.projectIds as string).split(",").map(Number);
+      const projectIds = (req.query.projectIds as string).split(",");
       const result = await dashboardRepositorySingleton.fetchProjectSprintList(projectIds)
 
       return res.json(result);
@@ -45,7 +45,7 @@ const routeFactory = (jiraClient: JiraClient) => {
 
 
     try {
-      const sprintIds = (req.query.sprintIds as string).split(",").map(Number);
+      const sprintIds = (req.query.sprintIds as string).split(",");
       const result = await dashboardRepositorySingleton.fetchIssuesList(sprintIds);
 
       return res.json(result);
