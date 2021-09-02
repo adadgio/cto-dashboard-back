@@ -86,10 +86,11 @@ class DashboardRepository {
 
     await this.session.run({
       text: `
-        UNWIND $data as properties
         MERGE (b:Board {id: $boardId})
         MERGE (s:Sprint {id: $id})
         MERGE (s)-[:BELONGS_TO]->(b)
+        WITH s
+        UNWIND $data as properties
         SET s = properties,
             s.id = $id
       `,
