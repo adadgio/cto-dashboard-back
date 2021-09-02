@@ -189,27 +189,22 @@ class DashboardRepository {
 
   async fetchProjectSprintList(projectIds: string[]): Promise<Sprint[]> {
     const query = await this.session.run('MATCH(p:Project)<-[:BELONGS_TO]-(b:Board)<-[:BELONGS_TO]-(s:Sprint) WHERE p.id IN $tabId return p as project, b as board, collect(s) as sprintByBoard', {tabId:projectIds});
-    try{
-      const projectSprintList:Sprint[] = query.records.map(record =>{
-        let tabSprint:Sprint[] = [];
-        for(const sprint of record.get('sprintByBoard')){
-          tabSprint.push({
-            id:sprint.properties.id,
-            boardId:undefined,
-            completeDate:sprint.properties.completeDate,
-            endDate:sprint.properties.endDate,
-            name:sprint.properties.name,
-            projectId:record.get('project').properties.id,
-            startDate:sprint.properties.startDate
-          });
-        }
-        return tabSprint;
-      }).flat();
-      return projectSprintList;
-    }catch(e){
-      console.log(e);
-      return e;
-    }
+    const projectSprintList:Sprint[] = query.records.map(record =>{
+      let tabSprint:Sprint[] = [];
+      for(const sprint of record.get('sprintByBoard')){
+        tabSprint.push({
+          id:sprint.properties.id,
+          boardId:undefined,
+          completeDate:sprint.properties.completeDate,
+          endDate:sprint.properties.endDate,
+          name:sprint.properties.name,
+          projectId:record.get('project').properties.id,
+          startDate:sprint.properties.startDate
+        });
+      }
+      return tabSprint;
+    }).flat();
+    return projectSprintList;
   }
 }
 
