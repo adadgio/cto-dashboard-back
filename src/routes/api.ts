@@ -15,6 +15,7 @@ const routeFactory = (jiraClient: JiraClient) => {
   router.get('/projectList', async (req:Request, res:Response, next: NextFunction)=>{
     try {
       const boards = await dashboardRepositorySingleton.fetchProjectList();
+
       return res.json(boards);
     } catch(e: any) {
       next(new ApiError(e));
@@ -27,14 +28,9 @@ const routeFactory = (jiraClient: JiraClient) => {
   router.get('/sprintList', async (req:Request, res:Response, next: NextFunction)=>{
     if (!req.query.projectIds)
       return res.status(500).json(new ApiError("No projectIds provided"));
-
-    const projectIds = (req.query.projectIds as string).split(",").map(Number);
  
     try {
-      // const jiraSprintsPromises = projectIds.map(id => jiraClient.getSprintsOfBoard(id));
-      // const jiraSprints = await waitAndFlatten(jiraSprintsPromises);
-      // const sprints = translators.jiraSprints(jiraSprints);
-
+      const projectIds = (req.query.projectIds as string).split(",").map(Number);
       const result = await dashboardRepositorySingleton.fetchProjectSprintList(projectIds)
 
       return res.json(result);
@@ -47,13 +43,11 @@ const routeFactory = (jiraClient: JiraClient) => {
     if (!req.query.sprintIds)
       return res.status(500).json(new ApiError("No sprintIds provided"));
 
-    const sprintIds = (req.query.sprintIds as string).split(",").map(Number);
 
     try {
-      // const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
-      // const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
+      const sprintIds = (req.query.sprintIds as string).split(",").map(Number);
       const result = await dashboardRepositorySingleton.fetchIssuesList(sprintIds);
-      // const issues = translators.jiraIssues(jiraIssues);
+
       return res.json(result);
     } catch(e: any) {
       next(new ApiError(e));
