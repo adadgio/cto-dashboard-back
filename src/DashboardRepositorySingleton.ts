@@ -103,14 +103,43 @@ class DashboardRepository {
   }
 
 
-  async countIssuesWithStatus(status: "Done" | "To Do" | "In Progress"): Promise<number> {
-    const result = await this.session.run('MATCH (n:Issue {status: $status}) RETURN count(n)', {status});
-    return result.records[0].get('count(n)');
+  async countBugsTodo(projectId: string): Promise<number> {
+    const result = await this.session.run(`
+      MATCH (:Project {id: $projectId})<-[:BELONGS_TO]-(n:Issue {type: "Bug"})
+      WHERE NOT n.status = "Done"
+      RETURN count(n)
+      `, {projectId});
+
+    return result.records[0].get('count(n)').toInt();
   }
 
-  async countIssuesWithType(type: "Bug" | "Feature"): Promise<number> {
-    const result = await this.session.run('MATCH (n:Issue {type: $type}) RETURN count(n)', {type});
-    return result.records[0].get('count(n)');
+  async countBugsDone(projectId: string): Promise<number> {
+    const result = await this.session.run(`
+      MATCH (:Project {id: $projectId})<-[:BELONGS_TO]-(n:Issue {type: "Bug", status: "Done"})
+      RETURN count(n)
+      `, {projectId});
+
+    return result.records[0].get('count(n)').toInt();
+  }
+
+  async countTasksTodo(projectId: string): Promise<number> {
+    const result = await this.session.run(`
+      MATCH (:Project {id: $projectId})<-[:BELONGS_TO]-(n:Issue {status: "Done"})
+      WHERE NOT n.type = "Bug"
+      RETURN count(n)
+      `, {projectId});
+
+    return result.records[0].get('count(n)').toInt();
+  }
+
+  async countTasksDone(projectId: string): Promise<number> {
+    const result = await this.session.run(`
+      MATCH (:Project {id: $projectId})<-[:BELONGS_TO]-(n:Issue)
+      WHERE NOT n.type = "Bug" AND NOT n.status = "Done"
+      RETURN count(n)
+      `, {projectId});
+
+    return result.records[0].get('count(n)').toInt();
   }
 
   async fetchProjectList() {
@@ -119,18 +148,19 @@ class DashboardRepository {
       RETURN p
     `);
 
-    const boards = result.records.map(res => res.get('p').properties);
+    const projects = result.records.map(res => res.get('p').properties);
 
-    //TODO: get the number of bugs/features todo/done
-    return boards.map(b => {
+    const boardsWithCounts = await Promise.all(projects.map(async p => {
       return {
-        ...b,
-        nbBugsTodo: 0,
-        nbBugsDone: 0,
-        nbFeatureTodo: 0,
-        nbFeatureDone: 0,
+        ...p,
+        nbBugsTodo: await this.countBugsTodo(p.id),
+        nbBugsDone: await this.countBugsDone(p.id),
+        nbFeatureTodo: await this.countTasksTodo(p.id),
+        nbFeatureDone: await this.countTasksDone(p.id),
       }
-    });
+    }));
+
+    return boardsWithCounts;
   }
 
   async fetchIssuesList(boardIds:number[]){
