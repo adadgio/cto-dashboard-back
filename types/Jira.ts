@@ -13,13 +13,15 @@ export interface JiraApiReturnIssues<T> extends JiraApiReturn {
 }
 
 export type JiraSprint = {
-  endDate?: string,
-  startDate?: string,
   id: number,
   name: string,
   originBoardId: number,
   self: string,
-  state: "active" | "future" | "archived" //todo
+  startDate?: string,
+  endDate?: string,
+  completeDate?: string,
+  goal: string,
+  state: "active" | "future" | "closed" //todo check other types
 }
 
 export type JiraBoard = {
@@ -53,9 +55,21 @@ export type JiraIssue = {
       name: string,
       id: string,
     },
+    resolution: { name: string, id: string },
+    project: {
+      name: string,
+      id: number
+    },
     issuetype: {
       name: string,
       id: string
     },
+    closedSprints: JiraSprint[],
+    labels: string[],
+    priority: {
+      name: string,
+      id: string,
+    },
+    subtasks: JiraIssue[],
   },
 }
