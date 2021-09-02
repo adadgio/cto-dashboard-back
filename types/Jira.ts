@@ -70,5 +70,6 @@ export type JiraIssue = {
       name: string,
       id: string,
     },
+    subtasks: JiraIssue[],
   },
 }
