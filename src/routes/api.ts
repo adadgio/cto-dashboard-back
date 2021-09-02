@@ -14,7 +14,7 @@ const routeFactory = (jiraClient: JiraClient) => {
    */
   router.get('/projectList', async (req:Request, res:Response, next: NextFunction)=>{
     try {
-      const boards = await jiraClient.getBoards();
+      const boards = await dashboardRepositorySingleton.fetchProjectList();
       return res.json(boards);
     } catch(e: any) {
       next(new ApiError(e));
