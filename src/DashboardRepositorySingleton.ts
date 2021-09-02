@@ -132,29 +132,26 @@ class DashboardRepository {
     return result.records[0].get('count(n)');
   }
   async fetchIssuesList(boardIds:number[]){
-    const queries = boardIds.map(boardId => 
-        this.session.run('MATCH (b:Board {id:$id})<--(i:Issue) RETURN b as board, collect(i) as issues', {id:boardId.toString()})
-      );
+      const query = await this.session.run('MATCH (s:Sprint)<-[BELONGS_TO]-(i:Issue) WHERE s.id IN $tabId RETURN s.id AS sId, s.name AS sName, collect({id:i.id, name:i.name, status:i.status, type:i.type}) as issues', {tabId:boardIds.map(String)})
       try{
-        let result = await Promise.all(queries);
-        const finalResult:Issue[][] = result.flatMap(result => result.records).map(node =>{
-              const boardId = node.get("board").properties.id;
-              let issueArray:Issue[] = [];
-              for(const issue of node.get("issues")){
+            const issueTab:Issue[] = query.records.map(record =>{
+                let issueArray:Issue[] = [];
+                for(const issue of record.get('issues')){
                   issueArray.push({
-                    id:issue.properties.id,
-                    boardId:boardId,
-                    sprintId:null,
-                    name:issue.properties.name,
-                    type:issue.properties.type,
-                    status:issue.properties.status
+                    boardId:null,
+                    id:issue.id,
+                    sprintId: record.get('sId'),
+                    name:issue.name,
+                    status:issue.status,
+                    type:issue.type
                   })
-              }
+                }
               return issueArray;
-            }
-          );
-        return finalResult.flat();
+            } 
+            ).flat();
+        return issueTab;
       }catch(e:any){
+        console.log(e);
         return e;
       }
   }

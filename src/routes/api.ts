@@ -48,12 +48,10 @@ const routeFactory = (jiraClient: JiraClient) => {
     const boardIds = (req.query.boardIds as string).split(",").map(Number);
 
     try {
-      const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
-      const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
+      // const jiraIssuesQueriesPromises = boardIds.map(id => jiraClient.getIssuesOfBoard(id));
+      // const jiraIssues = await waitAndFlatten(jiraIssuesQueriesPromises);
       const result = await dashboardRepositorySingleton.fetchIssuesList(boardIds);
-      // console.log("request inside neo4j db");
-      // console.log(result);
-      const issues = translators.jiraIssues(jiraIssues);
+      // const issues = translators.jiraIssues(jiraIssues);
       return res.json(result);
     } catch(e: any) {
       next(new ApiError(e));
