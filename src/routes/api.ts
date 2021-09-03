@@ -27,7 +27,7 @@ const routeFactory = (jiraClient: JiraClient) => {
    */
   router.get('/sprintList', async (req:Request, res:Response, next: NextFunction)=>{
     if (!req.query.projectIds)
-      return res.status(500).json(new ApiError("No projectIds provided"));
+      return res.status(400).json(new ApiError("No projectIds provided"));
  
     try {
       const projectIds = (req.query.projectIds as string).split(",");
@@ -41,7 +41,7 @@ const routeFactory = (jiraClient: JiraClient) => {
 
   router.get('/issueList', async (req:Request, res:Response, next: NextFunction)=>{
     if (!req.query.sprintIds)
-      return res.status(500).json(new ApiError("No sprintIds provided"));
+      return res.status(400).json(new ApiError("No sprintIds provided"));
 
 
     try {
