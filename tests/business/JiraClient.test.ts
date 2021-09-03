@@ -1,6 +1,7 @@
 import conf from '../../src/ConfigurationSingleton';
 
 import JiraClient from "../../src/business/JiraClient";
+import { JiraSprint } from '../../types/Jira';
 
 describe("JiraClient", () => {
   it('should fail cleanly when auth is invalid', async () => {
@@ -13,26 +14,22 @@ describe("JiraClient", () => {
   it('should get boards', async () => {
     const jc = new JiraClient(conf.jiraHost, conf.jiraUser, conf.jiraToken);
 
-
-    const boardSchema = {
-      id: expect.any(Number),
-    };
-
     const boards = await jc.getBoards();
-    expect(boards).toContain(boardSchema);
+    expect(boards[0].id).toBeDefined();
   });
 
   it('should get sprints', async () => {
     const jc = new JiraClient(conf.jiraHost, conf.jiraUser, conf.jiraToken);
 
-
     const sprintSchema = {
       id: expect.any(Number),
+      self: expect.any(String),
+      state: expect.any(String),
       name: expect.any(String),
-      boardId: expect.any(Number),
+      originBoardId: expect.any(Number)
     };
 
-    const sprints = await jc.getSprints([1]);
+    const sprints:JiraSprint[] = await jc.getSprintsOfBoard(1);
     expect(sprints).toEqual(
       expect.arrayContaining([sprintSchema])
     )
