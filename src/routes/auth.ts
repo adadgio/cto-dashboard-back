@@ -5,7 +5,6 @@ import ApiError from "../ApiError";
 import {
   authenticateUser,
   signJWT,
-  validateJWT
 } from '../business/authentication';
 
 const routeFactory = () => {
@@ -30,7 +29,9 @@ const routeFactory = () => {
       }
 
       const token = signJWT({ username: body.username });
-      return res.send({jwtKey: token});
+      return res.cookie('jwt', token, { httpOnly: true })
+        .send();
+
     } catch (error) {
       next(new ApiError(error));
     }
