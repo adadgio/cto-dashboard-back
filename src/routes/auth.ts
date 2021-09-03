@@ -1,8 +1,11 @@
 import { Router } from "express";
+import Joi from "joi";
 import conf from '../ConfigurationSingleton';
 import ApiError from "../ApiError";
-import jwt from "jsonwebtoken";
-import Joi from "joi";
+import {
+  authenticateUser,
+  signJWT,
+} from '../business/authentication';
 
 const routeFactory = () => {
   const router = Router();
@@ -20,23 +23,15 @@ const routeFactory = () => {
     const body = validationResult.value;
 
     try {
-      const ADMIN_NAME = conf.ADMIN_NAME;
-      const ADMIN_PASSWORD = conf.ADMIN_PASSWORD;
-      if (
-        body.username === ADMIN_NAME &&
-        body.password === ADMIN_PASSWORD
-      ) {
-        const token = jwt.sign(
-          { username: req.body.username },
-          conf.TOKEN_KEY,
-          {
-            expiresIn: "2h",
-          }
-        );
-        return res.send(token);
-      } else {
+      const user = authenticateUser(body.username, body.password)
+      if (!user) {
         res.status(401).json({error: "Wrong username or password"});
       }
+
+      const token = signJWT({ username: body.username });
+      return res.cookie('jwt', token, { httpOnly: true })
+        .send();
+
     } catch (error) {
       next(new ApiError(error));
     }
