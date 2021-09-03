@@ -1,4 +1,5 @@
 import { Router } from "express";
+import conf from '../ConfigurationSingleton';
 import ApiError from "../ApiError";
 import jwt from "jsonwebtoken";
 
@@ -7,15 +8,15 @@ const routeFactory = () => {
 
   router.post("/login", (req, res, next) => {
     try {
-      const ADMIN_NAME = process.env.ADMIN_NAME;
-      const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+      const ADMIN_NAME = conf.ADMIN_NAME;
+      const ADMIN_PASSWORD = conf.ADMIN_PASSWORD;
       if (
         req.body.username === ADMIN_NAME &&
         req.body.password === ADMIN_PASSWORD
       ) {
         const token = jwt.sign(
           { username: req.body.username },
-          <string>process.env.TOKEN_KEY,
+          conf.TOKEN_KEY,
           {
             expiresIn: "2h",
           }
