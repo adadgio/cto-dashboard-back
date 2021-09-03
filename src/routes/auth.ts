@@ -2,17 +2,29 @@ import { Router } from "express";
 import conf from '../ConfigurationSingleton';
 import ApiError from "../ApiError";
 import jwt from "jsonwebtoken";
+import Joi from "joi";
 
 const routeFactory = () => {
   const router = Router();
 
   router.post("/login", (req, res, next) => {
+    const schema = Joi.object({
+      username: Joi.string().required(),
+      password: Joi.string().required(),
+    })
+
+    const validationResult = schema.validate(req.body);
+    if (validationResult.error) {
+      return res.status(400).json({error: validationResult.error.message});
+    }
+    const body = validationResult.value;
+
     try {
       const ADMIN_NAME = conf.ADMIN_NAME;
       const ADMIN_PASSWORD = conf.ADMIN_PASSWORD;
       if (
-        req.body.username === ADMIN_NAME &&
-        req.body.password === ADMIN_PASSWORD
+        body.username === ADMIN_NAME &&
+        body.password === ADMIN_PASSWORD
       ) {
         const token = jwt.sign(
           { username: req.body.username },
