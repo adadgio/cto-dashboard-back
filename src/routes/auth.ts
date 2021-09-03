@@ -30,7 +30,7 @@ const routeFactory = () => {
       }
 
       const token = signJWT({ username: body.username });
-      return res.send(token);
+      return res.send({jwtKey: token});
     } catch (error) {
       next(new ApiError(error));
     }
