@@ -22,6 +22,7 @@ const authRouter = authRoutesFactory();
 const apiRouter = apiRoutesFactory(jiraClient);
 
 app.use(loggerMiddleware);
+
 app.use(authRouter);
 app.use(apiRouter);
 

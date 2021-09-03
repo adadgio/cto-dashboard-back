@@ -163,53 +163,54 @@ class DashboardRepository {
     return boardsWithCounts;
   }
 
-  async fetchIssuesList(boardIds:number[]){
-      const query = await this.session.run('MATCH (s:Sprint)<-[BELONGS_TO]-(i:Issue) WHERE s.id IN $tabId RETURN s.id AS sId, s.name AS sName, collect({id:i.id, name:i.name, status:i.status, type:i.type}) as issues', {tabId:boardIds.map(String)})
-      try{
-            const issueTab:Issue[] = query.records.map(record =>{
-                let issueArray:Issue[] = [];
-                for(const issue of record.get('issues')){
-                  issueArray.push(<Issue>{
-                    id:issue.id,
-                    sprintId: record.get('sId'),
-                    name:issue.name,
-                    status:issue.status,
-                    type:issue.type
-                  })
-                }
-              return issueArray;
-            } 
-            ).flat();
-        return issueTab;
-      }catch(e:any){
-        console.log(e);
-        return e;
-      }
+  async fetchIssuesList(sprintIds: string[]): Promise<Issue[]> {
+    const query = await this.session.run(`
+      MATCH (s:Sprint)<-[:BELONGS_TO]-(i:Issue)
+      WHERE s.id IN $sprintIds
+      RETURN s.id AS sId,
+             s.name AS sName,
+             collect({id:i.id, name:i.name, status:i.status, type:i.type}) AS issues
+      `, { sprintIds });
+
+    const issueTab:Issue[] = query.records.map(
+      record => record.get('issues').map((issue: any) => {
+        return {
+          id:issue.id,
+          sprintId: record.get('sId'),
+          name:issue.name,
+          status:issue.status,
+          type:issue.type
+        }
+      })
+    ).flat();
+
+    return issueTab;
   }
 
-  async fetchProjectSprintList(projectIds:number[]) {
-    const query = await this.session.run('MATCH(p:Project)<-[:BELONGS_TO]-(b:Board)<-[:BELONGS_TO]-(s:Sprint) WHERE p.id IN $tabId return p as project, b as board, collect(s) as sprintByBoard', {tabId:projectIds.map(String)});
-    try{
-      const projectSprintList:Sprint[] = query.records.map(record =>{
-        let tabSprint:Sprint[] = [];
-        for(const sprint of record.get('sprintByBoard')){
-          tabSprint.push({
-            id:sprint.properties.id,
-            boardId:undefined,
-            completeDate:sprint.properties.completeDate,
-            endDate:sprint.properties.endDate,
-            name:sprint.properties.name,
-            projectId:record.get('project').properties.id,
-            startDate:sprint.properties.startDate
-          });
-        }
-        return tabSprint;
-      }).flat();
-      return projectSprintList;
-    }catch(e){
-      console.log(e);
-      return e;
-    }
+  async fetchProjectSprintList(projectIds: string[]): Promise<Sprint[]> {
+    const query = await this.session.run(`
+      MATCH(p:Project)<-[:BELONGS_TO]-(b:Board)<-[:BELONGS_TO]-(s:Sprint)
+      WHERE p.id IN $projectIds
+      RETURN p AS project,
+             b AS board,
+             collect(s) AS sprintByBoard
+      `,
+      { projectIds });
+
+    const projectSprintList:Sprint[] = query.records.map(
+      record => record.get('sprintByBoard').map((sprint: any) => {
+        return {
+          id: sprint.properties.id,
+          name: sprint.properties.name,
+          projectId: record.get('project').properties.id,
+          startDate: sprint.properties.startDate,
+          endDate: sprint.properties.endDate,
+          completeDate: sprint.properties.completeDate,
+        };
+      })
+    ).flat();
+
+    return projectSprintList;
   }
 }
 

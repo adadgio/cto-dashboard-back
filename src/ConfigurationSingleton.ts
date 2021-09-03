@@ -14,6 +14,9 @@ export const configurationSchema = Joi.object({
   neo4jUsername: Joi.string().required(),
   neo4jPassword: Joi.string().required(),
   neo4jDatabase: Joi.string().required(),
+  ADMIN_NAME: Joi.string().required(),
+  ADMIN_PASSWORD: Joi.string().required(),
+  TOKEN_KEY: Joi.string().required(),
 });
 
 //TODO: find a way to avoid repetitive type (validating at compile time) + schema (validating at execution time)
@@ -27,6 +30,9 @@ type Configuration = {
   neo4jUsername: string,
   neo4jPassword: string,
   neo4jDatabase: string,
+  ADMIN_NAME: string,
+  ADMIN_PASSWORD: string,
+  TOKEN_KEY: string,
 }
 
 const validationResult = configurationSchema.validate({
@@ -39,6 +45,9 @@ const validationResult = configurationSchema.validate({
   neo4jUsername: process.env.NEO4J_USERNAME,
   neo4jPassword: process.env.NEO4J_PASSWORD,
   neo4jDatabase: process.env.NEO4J_DATABASE,
+  ADMIN_NAME: process.env.ADMIN_NAME,
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+  TOKEN_KEY: process.env.TOKEN_KEY,
 });
 
 if (validationResult.error) {
