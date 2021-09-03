@@ -165,23 +165,23 @@ class DashboardRepository {
 
   async fetchIssuesList(sprintIds: string[]): Promise<Issue[]> {
     const query = await this.session.run(`
-      MATCH (s:Sprint)<-[:BELONGS_TO]-(i:Issue)
-      WHERE s.id IN $sprintIds
-      RETURN s.id AS sId,
-             s.name AS sName,
-             collect({id:i.id, name:i.name, status:i.status, type:i.type}) AS issues
+        MATCH(s:Sprint)<-[:BELONGS_TO]-(i:Issue)-[:BELONGS_TO]->(p:Project)
+        WHERE s.id IN $sprintIds
+        RETURN s,collect(i) as issues, p
       `, { sprintIds });
 
     const issueTab:Issue[] = query.records.map(
       record => record.get('issues').map((issue: any) => {
-        return {
-          id:issue.id,
-          sprintId: record.get('sId'),
-          name:issue.name,
-          status:issue.status,
-          type:issue.type
-        }
-      })
+          return {
+            id:issue.properties.id,
+            sprintId: record.get('s').properties.id,
+            name:issue.properties.name,
+            status:issue.properties.status,
+            type:issue.properties.type,
+            projectId:record.get('p').properties.id,
+            allSprintIds:sprintIds.map(Number)
+          }
+        })
     ).flat();
 
     return issueTab;
