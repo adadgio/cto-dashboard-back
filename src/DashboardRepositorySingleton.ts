@@ -178,8 +178,7 @@ class DashboardRepository {
             name:issue.properties.name,
             status:issue.properties.status,
             type:issue.properties.type,
-            projectId:record.get('p').properties.id,
-            allSprintIds:sprintIds.map(Number)
+            projectId:record.get('p').properties.id
           }
         })
     ).flat();
