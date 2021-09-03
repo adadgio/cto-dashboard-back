@@ -22,7 +22,9 @@ const routeFactory = () => {
           }
         );
         return res.send(token);
-      } else throw new Error("Unauthorized");
+      } else {
+        res.status(401).json({error: "Wrong username or password"});
+      }
     } catch (error) {
       next(new ApiError(error));
     }
